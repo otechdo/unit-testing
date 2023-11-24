@@ -1,0 +1,31 @@
+[package]
+name = "unit-testing"
+version = "1.2.2"
+edition = "2021"
+description = "A unit testing library"
+license = "GPL-2.0-or-later"
+repository = "https://github.com/taishingi/zuu/tree/master/unit-testing"
+documentation = "https://docs.rs/unit-testing/"
+
+[lib]
+name = "unit"
+path = "src/tdd.rs"
+crate-type = ["lib"]
+test = true             # Is tested by default.
+doctest = true          # Documentation examples are tested by default.
+bench = true            # Is benchmarked by default.
+doc = true              # Is documented by default.
+harness = true          # Use libtest harness.
+proc-macro = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+colored_truecolor = "0.1.0"
+mockall = "0.11.4"
+num = "0.4.0"
+is_executable = "1.0.1"
+maplit = "1.0.2"
+openssl-sys = "0.9"
+openssl = "0.10"
+reqwest = { version = "0.11", features = ["blocking", "json"] }
+scraper = "0.17.1"
