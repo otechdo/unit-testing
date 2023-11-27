@@ -10,8 +10,6 @@
 * [Getting cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 * [Rust guide](https://doc.rust-lang.org/cargo/guide/)
 
-## Installation
-
 ![bencmark](badges/benchmark.svg)
 
 ![build](badges/build.svg)
@@ -29,6 +27,8 @@
 ![tests](badges/tree.svg)
 
 ![tests](badges/verify.svg)
+
+## Installatation
 
 ```shell
 cargo add unit-testing
