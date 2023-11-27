@@ -8,7 +8,6 @@ pub mod unit {
     }
 
     pub trait Testable {
-
         fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode;
 
         ///

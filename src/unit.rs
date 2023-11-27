@@ -102,8 +102,8 @@ pub mod unit {
                 "[ ✓ ]",
                 format!(
                     "{} {}",
-                    total.to_string().blue().bold().to_string(),
-                    "assertions".blue().bold().to_string()
+                    total.to_string().blue().bold(),
+                    "assertions".blue().bold()
                 )
                 .as_str(),
                 Color::Green,
@@ -149,14 +149,14 @@ pub mod unit {
         }
 
         fn string_contains(&mut self, a: &str, b: &str) -> &mut Self {
-            self.assert(a.contains(&b), IS_CONTAINS, SHOULD_CONTAINS)
+            self.assert(a.contains(b), IS_CONTAINS, SHOULD_CONTAINS)
         }
 
         fn file_contains(&mut self, f: &str, v: &str) -> &mut Self {
             self.assert(
                 fs::read_to_string(f)
-                    .expect(format!("The filename {} has not been founded", f).as_str())
-                    .contains(&v),
+                    .unwrap_or_else(|_| panic!("The filename {} has not been founded", f))
+                    .contains(v),
                 IS_CONTAINS,
                 SHOULD_CONTAINS,
             )
