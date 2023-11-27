@@ -28,7 +28,7 @@
 
 ![tests](badges/verify.svg)
 
-![see](unit.gif)
+![see](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
 
 ## Installation
 
