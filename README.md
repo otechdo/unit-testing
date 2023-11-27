@@ -28,7 +28,7 @@
 
 ![tests](badges/verify.svg)
 
-## Installatation
+## Installation
 
 ```shell
 cargo add unit-testing
