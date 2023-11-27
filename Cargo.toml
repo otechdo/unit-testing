@@ -1,11 +1,11 @@
 workspace = { members = ["tests"] }
 [package]
 name = "unit-testing"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 description = "A unit testing library"
 license = "GPL-2.0-or-later"
-repository = "https://github.com/taishingi/zuu/tree/master/unit-testing"
+repository = "https://github.com/taishingi/unit-testing"
 documentation = "https://docs.rs/unit-testing/"
 
 [lib]
