@@ -28,6 +28,8 @@
 
 ![tests](badges/verify.svg)
 
+![see](unit.gif)
+
 ## Installation
 
 ```shell

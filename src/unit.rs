@@ -1,4 +1,8 @@
 pub mod unit {
+    use crate::unit::consts::unit::{
+        THEORY_IS_TRUE, THEORY_SHOULD_BE_FALSE, THEORY_SHOULD_BE_TRUE,
+    };
+    use crossterm_cursor::TerminalCursor;
     use progress_bar::*;
     use std::collections::HashSet;
     use std::path::Path;
@@ -6,10 +10,6 @@ pub mod unit {
     use std::thread::sleep;
     use std::time::Duration;
     use std::{cell::Cell, fs};
-
-    use crate::unit::consts::unit::{
-        THEORY_IS_TRUE, THEORY_SHOULD_BE_FALSE, THEORY_SHOULD_BE_TRUE,
-    };
 
     use self::consts::unit::{
         IS_EXECUTABLE, IS_NOT_EXECUTABLE, IS_NOT_EXISTS, SHOULD_BE_EXECUTABLE, SHOULD_NOT_CONTAINS,
@@ -71,12 +71,15 @@ pub mod unit {
                 assertions: Cell::new(0),
                 messages: Vec::new(),
             };
-
+            let cursor = TerminalCursor::new();
+            cursor.hide().expect("failed to hide cursor");
             let mut j = &mut x;
             for c in callbacks.iter() {
                 j = c(j);
             }
+
             j.end().expect("a");
+            cursor.show().expect("failed to re show cursor");
             exit(0)
         }
 
