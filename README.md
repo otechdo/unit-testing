@@ -12,6 +12,24 @@
 
 ## Installation
 
+![bencmark](badges/benchmark.svg)
+
+![build](badges/build.svg)
+
+![check](badges/check.svg)
+
+![clippy](badges/clippy.svg)
+
+![documentation](badges/documentation.svg)
+
+![format](badges/format.svg)
+
+![tests](badges/tests.svg)
+
+![tests](badges/tree.svg)
+
+![tests](badges/verify.svg)
+
 ```shell
 cargo add unit-testing
 ```
