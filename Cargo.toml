@@ -1,7 +1,7 @@
 workspace = { members = ["tests"] }
 [package]
 name = "unit-testing"
-version = "2.0.1"
+version = "2.0.2"
 edition = "2021"
 description = "A unit testing library"
 license = "GPL-2.0-or-later"

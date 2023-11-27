@@ -36,147 +36,112 @@
 cargo add unit-testing
 ```
 
+## Usage
+
 ```rust
-#[cfg(test)]
-mod tests {
-    use crate::{
-        assert_contains, assert_directory_exist, assert_equals, assert_false, assert_files_exist,
-        assert_not_contains, assert_true, assert_unequals,
-        tdd::unit::{Style::POINT, Unit, NO_PROGRESS},
-    };
-    use std::env::consts::OS;
+use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
-    #[test]
-    pub fn unit() {
-        fn battery_full() -> usize {
-            100
-        }
-        fn battery_not_full() -> usize {
-            50
-        }
+use num::Float;
+use unit::unit::{
+    traits::unit::{Testable, Theory},
+    Assert,
+};
 
-        let mut u = Unit::new("Test the unit framework", NO_PROGRESS, POINT);
-
-        u.ok(true).ko(false);
-        u.is_directory("/");
-        u.is_file("README.md");
-        u.not_full(battery_not_full, 100).full(battery_full, 100);
-        u.equals("a", "a").unequals("a", "b");
-        u.chaos(false, true);
-        u.inferior(50, 500).superior(50, 10);
-        u.prime(1).prime(7).prime(11);
-        u.pair(2).pair(4).pair(6);
-        u.impair(3).impair(9);
-        u.contains(OS, "linux").not_contains(OS, "windows");
-        u.empty("").not_empty(OS);
-        u.end().expect("failed");
-    }
-
-    #[test]
-    pub fn test_macros() {
-        assert_true!("All values must matches true", vec![true, true, true]);
-        assert_false!("All values must matches false", vec![false, false, false]);
-        assert_directory_exist!(
-            "Check if user use linux",
-            vec!["/", "/home", "/etc", ".", ".."]
-        );
-        assert_files_exist!(
-            "Check if user use linux",
-            vec!["/etc/hosts", "/etc/locale.gen"]
-        );
-
-        assert_contains!("Check if user use linux", vec!["linux"], OS);
-        assert_not_contains!(
-            "Check if user use linux",
-            vec!["windows", "ios", "freebsd", "openbsd", "android", "solaris", "netbsd", "macos"],
-            OS
-        );
-
-        assert_equals!(
-            "All value must be equals to linux",
-            vec!["linux", "linux", "linux"],
-            OS
-        );
-
-        assert_unequals!(
-            "All os must be only equals to linux",
-            vec!["windows", "ios", "freebsd", "openbsd", "android", "solaris", "netbsd", "macos"],
-            OS
-        );
-    }
+fn ok() -> bool {
+    true
 }
 
-#[cfg(test)]
-mod tests {
-    use crate::{
-        assert_contains, assert_directory_exist, assert_equals, assert_false, assert_files_exist,
-        assert_not_contains, assert_true, assert_unequals,
-        tdd::unit::{Unit, NO_PROGRESS},
-    };
-    use std::env::consts::OS;
-
-    #[test]
-    pub fn unit() {
-        fn battery_full() -> usize {
-            100
-        }
-        fn battery_not_full() -> usize {
-            50
-        }
-
-        let mut u = Unit::new("Test the unit framework", NO_PROGRESS);
-
-        u.ok(true).ko(false);
-        u.is_directory("/");
-        u.is_file("README.md");
-        u.not_full(battery_not_full, 100).full(battery_full, 100);
-        u.equals("a", "a").unequals("a", "b");
-        u.chaos(false, true);
-        u.inferior(50, 500).superior(50, 10);
-        u.prime(1).prime(7).prime(11);
-        u.pair(2).pair(4).pair(6);
-        u.impair(3).impair(9);
-        u.contains(OS, "linux").not_contains(OS, "windows");
-        u.empty("").not_empty(OS);
-        u.end().expect("failed");
-    }
-
-
-    #[test]
-    pub fn test_macros() {
-        assert_true!("All values must matches true", vec![true, true, true]);
-        assert_false!("All values must matches false", vec![false, false, false]);
-        assert_directory_exist!(
-            "Check if user use linux",
-            vec!["/", "/home", "/etc", ".", ".."]
-        );
-        assert_files_exist!(
-            "Check if user use linux",
-            vec!["/etc/hosts", "/etc/locale.gen"]
-        );
-
-        assert_contains!("Check if user use linux", vec!["linux"], OS);
-        assert_not_contains!(
-            "Check if user use linux",
-            vec!["windows", "ios", "freebsd", "openbsd", "android", "solaris", "netbsd", "macos"],
-            OS
-        );
-
-        assert_equals!(
-            "All value must be equals to linux",
-            vec!["linux", "linux", "linux"],
-            OS
-        );
-
-        assert_unequals!(
-            "All os must be only equals to linux",
-            vec!["windows", "ios", "freebsd", "openbsd", "android", "solaris", "netbsd", "macos"],
-            OS
-        );
-    }
+fn ko() -> bool {
+    false
 }
-```
 
-```shell
-cargo test -- --show-output
+fn must_pass(u: &mut Assert) -> &mut Assert {
+    u.ok(&ok).ko(&ko)
+}
+
+fn must_exists(u: &mut Assert) -> &mut Assert {
+    u.exists(".").exists("README.md").exists("/").exists("/lib")
+}
+
+fn must_linux(u: &mut Assert) -> &mut Assert {
+    u.not_exists("C:\\Users")
+        .not_exists("C:\\ProgramData")
+        .not_exists("C:\\WINDOWS\\symtem32")
+}
+
+fn must_equals(u: &mut Assert) -> &mut Assert {
+    u.equals("README.md", "README.md")
+        .equals(4, 4)
+        .equals(4.4, 4.4)
+        .equals(true, true)
+        .equals(false, false)
+}
+
+fn must_contains(u: &mut Assert) -> &mut Assert {
+    let mut v: Vec<String> = Vec::new();
+    let o = Option::Some("a".to_string());
+    v.push("value".to_string());
+    v.push("h".to_string());
+    u.vec_contains(v, "h".to_string())
+        .option_contains(o, "a".to_string())
+        .string_contains(OS, "linux")
+        .file_contains("README.md", "Installation")
+        .hash_contains(&mut HashSet::from(["a".to_string()]), "a".to_string())
+}
+
+fn must_unequals(u: &mut Assert) -> &mut Assert {
+    u.unequals("README.md", ".")
+        .unequals(4, 6)
+        .unequals(5.6, 4.4)
+        .unequals(false, true)
+        .unequals(false, true)
+}
+
+fn must_superior(u: &mut Assert) -> &mut Assert {
+    u.superior(1, 0).superior(5, 2)
+}
+
+fn programs(u: &mut Assert) -> &mut Assert {
+    u.is_program("/usr/bin/git").is_program("/usr/bin/curl")
+}
+fn no_programs(u: &mut Assert) -> &mut Assert {
+    u.not_program("cmd")
+}
+
+fn must_inferior(u: &mut Assert) -> &mut Assert {
+    u.inferior(10, 50).inferior(50, 200)
+}
+
+fn must_beetween(u: &mut Assert) -> &mut Assert {
+    u.between(10, 5, 50).between(50, 10, 200)
+}
+
+fn pythagore() -> f32 {
+    Float::hypot(3.0, 4.0)
+}
+
+fn pythagore_not_work() -> bool {
+    Float::hypot(4.0, 4.0) == 5.0
+}
+
+fn must_theory(u: &mut Assert) -> &mut Assert {
+    u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
+}
+
+fn main() -> ExitCode {
+    Assert::it(vec![
+        &must_beetween,
+        &programs,
+        &must_theory,
+        &no_programs,
+        &must_unequals,
+        &must_linux,
+        &must_equals,
+        &must_exists,
+        &must_pass,
+        &must_contains,
+        &must_superior,
+        &must_inferior,
+    ])
+}
 ```
