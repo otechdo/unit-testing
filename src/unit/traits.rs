@@ -19,7 +19,6 @@ pub mod unit {
     }
 
     pub trait Testable {
-
         ///
         /// # Contructor
         ///
