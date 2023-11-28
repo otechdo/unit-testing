@@ -2,12 +2,30 @@ pub mod unit {
     use std::{collections::HashSet, process::ExitCode};
 
     pub trait Theory {
+        ///
+        /// # A theory must be equal to false
+        ///
+        /// - `callback` The callback to execute
+        ///
         fn chaos(&mut self, callback: &dyn Fn() -> bool) -> &mut Self;
 
+        ///
+        /// # Test a theory
+        ///
+        /// - `expected`    The expctecd callback result
+        /// - `callback`    The callback to execute
+        ///
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self;
     }
 
     pub trait Testable {
+
+        ///
+        /// # Contructor
+        ///
+        /// - `callbacks` The vec list of callback
+        ///
+        ///
         fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode;
 
         ///
