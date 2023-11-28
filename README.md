@@ -46,37 +46,14 @@ All tests in Assert use
 assert!(test);
 ```
 
-So if a test is not true it's fail automatically.
-
-If you want to pass failures tests implement trait [**Testable**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L21), [**Theory**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L4) for your new struct like Unit for example.
-
-```rust
-use unit::unit::{
-    traits::unit::{Testable, Theory},
-};
-
-pub struct Unit {
-    assertions: Cell<usize>,
-    failures: Cell<usize>,
-    messages: Hashmap<String,String>,
-}
-
-impl Theory for Unit {
-
-}
-
-impl Testable for Unit {
-
-}
-```
-
-> Set assert callback to print the success message or the error message
-
-And use it !
+If you want to continue testing onf failures use [**Unit**](https://github.com/taishingi/unit-testing/blob/master/src/unit.rs#L40).
 
 ```rust
 use std::process::ExitCode;
-use mylib::Unit;
+use unit::unit::{
+    traits::unit::{Testable, Theory},
+    Unit,
+};
 
 fn ok()-> bool
 {
