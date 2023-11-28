@@ -172,36 +172,30 @@ pub mod unit {
             let failure_i = Cell::new(0);
             init_progress_bar_with_eta(total);
             set_progress_bar_action("[ :: ]", Color::Green, Style::Bold);
-            for _x in 0..total {
+            for _i in 0..total {
                 let s = self.success.get(success_i.get());
                 let f = self.failure.get(failure_i.get());
                 sleep(Duration::from_millis(100));
-                if s.is_none() {
-                    print_progress_bar_info(
-                        "[ KO ]",
-                        f.expect("failed to parse error meassage")
-                            .purple()
-                            .bold()
-                            .to_string()
-                            .as_str(),
-                        Color::Red,
-                        Style::Bold,
-                    );
-                    failure_i.set(failure_i.get() + 1);
-                } else {
+
+                if let Some(x) = s {
                     print_progress_bar_info(
                         "[ OK ]",
-                        s.expect("failed to parse success message")
-                            .blue()
-                            .bold()
-                            .to_string()
-                            .as_str(),
+                        x.blue().bold().to_string().as_str(),
                         Color::Green,
                         Style::Bold,
                     );
                     success_i.set(success_i.get() + 1);
                 }
 
+                if let Some(x) = f {
+                    print_progress_bar_info(
+                        "[ KO ]",
+                        x.purple().bold().to_string().as_str(),
+                        Color::Red,
+                        Style::Bold,
+                    );
+                    failure_i.set(failure_i.get() + 1);
+                }
                 inc_progress_bar();
             }
 

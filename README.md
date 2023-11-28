@@ -30,7 +30,7 @@
 
 ![see-assert](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
 
-![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-test.gif)
+![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-testing.gif)
 
 ## Installation
 
