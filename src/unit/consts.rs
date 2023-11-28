@@ -1,57 +1,68 @@
 pub mod unit {
-    pub const IS_OK: &str = "The result match true";
-    pub const SHOULD_BE_OK: &str = "The result match false and should be match true";
-    pub const IS_KO: &str = "The result match false";
-    pub const SHOULD_BE_KO: &str = "The result match true and should be match false";
+
+    pub const ASSERT_OK: &str = "The value match true";
+    pub const ASSERT_SHOULD_BE_OK: &str = "The value match false and should be match true";
+    pub const ASSERT_KO: &str = "The value match false";
+    pub const ASSERT_SHOULD_BE_KO: &str = "The value match true and should be match false";
+    pub const ASSERT_EQUALS: &str = "The values are equals";
+    pub const ASSERT_SHOULD_BE_EQUALS: &str = "The values match unequality but should be equals";
+    pub const ASSERT_UNEQUALS: &str = "The values are unequals";
+    pub const ASSERT_SHOULD_BE_UNEQUALS: &str =
+        "The values are equals but values should be unequals";
+    pub const ASSERT_BETWEEN: &str = "The value are between min and max";
+    pub const ASSERT_SHOULD_BE_BETWEEN: &str =
+        "The value are not between min and max but should be between the values";
+    pub const ASSERT_INFERIOR: &str = "The value is inferior to the expected value";
+    pub const ASSERT_SHOULD_BE_INFERIOR: &str = "The value is inferior to the maximum value";
+    pub const ASSERT_SUPERIOR: &str = "The value is superior to the minimum value";
+    pub const ASSERT_SHOULD_BE_SUPERIOR: &str =
+        "The value is inferior to the minimum value and sould be superior";
+
+    pub const ASSERT_EMPTY: &str = "The value is empty";
+    pub const ASSERT_SHOULD_BE_EMPTY: &str = "The value is not empty but should be empty";
+
+    pub const ASSERT_EXISTS: &str = "The path exists";
+    pub const ASSERT_SOULD_BE_EXISTS: &str = "The paths has not been founded but should be exists";
+
+    pub const ASSERT_CONTAINS: &str = "The value contains the expected data";
+    pub const ASSERT_SHOULD_CONTAINS: &str =
+        "The value don't contains expected data but sould be contains it";
+    pub const ASSERT_IS_EXECUTABLE: &str = "The file is executable";
+    pub const ASSERT_SHOULD_BE_EXECUTABLE: &str =
+        "The file is not an executable but it's should be";
+    pub const ASSERT_THEORY_IS_TRUE: &str = "The theory is true";
+    pub const ASSERT_THEORY_SHOULD_BE_TRUE: &str =
+        "The theory match false but she should be match true";
+    pub const ASSERT_THEORY_IS_FALSE: &str = "The theory is false";
+    pub const ASSERT_THEORY_SHOULD_BE_FALSE: &str =
+        "The theory fmatch true she should be match false";
+    pub const ASSERT_IS_NOT_EXECUTABLE: &str = "The file is not an executable";
+    pub const ASSERT_SHOULD_BE_NOT_EXECUTABLE: &str = "The file is executable and sould be not";
+    pub const ASSERT_NOT_EXISTS: &str = "The assertion match true, the given path not exists";
+    pub const ASSERT_SHOULD_BE_NOT_EXISTS: &str = "The path exists and sould be not";
+    pub const ASSERT_NOT_CONTAINS: &str = "The value don't contains the data";
+    pub const ASSERT_SHOULD_BE_NOT_CONTAINS: &str = "The value contains the data and sould be not";
+    pub const ASSERT_NOT_EMPTY: &str = "The value is not empty";
+    pub const ASSERT_SOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
+    pub const ASSERT_PROGRESS_TIME: u64 = 100;
+
+    pub const IS_OK: &str = "The test match true";
+    pub const IS_KO: &str = "The test match false";
     pub const IS_EQUALS: &str = "The values are equals";
-    pub const SHOULD_BE_EQUALS: &str = "The values should be equals";
     pub const IS_UNEQUALS: &str = "The values are unequals";
-    pub const SHOULD_BE_UNEQUALS: &str = "The values should be unequals";
-    pub const IS_BETWEEN: &str = "The values are between the expected values";
-    pub const SHOULD_BE_BETWEEN: &str = "The values sould be between the expected values";
-    pub const IS_INFERIOR: &str = "The value are inferior to the expected value";
-    pub const SHOULD_BE_INFERIOR: &str = "The value should be inferior to the expected value";
-    pub const IS_SUPERIOR: &str = "The value are superior to the expected value";
-    pub const SHOULD_BE_SUPERIOR: &str = "The value should be superior to the expected value";
+    pub const IS_BETWEEN: &str = "The value is between min and max";
+    pub const IS_NOT_BETWEEN: &str = "The value is not between min and max";
+    pub const IS_INFERIOR: &str = "The value is inferior to the maximum value";
+    pub const IS_SUPERIOR: &str = "The value is superior to the minimum value";
     pub const IS_EMPTY: &str = "The value is empty";
-    pub const IS_DIRECTORY: &str = "The directory exist";
-    pub const IS_FILE: &str = "The file exist";
-    pub const IS_FULL: &str = "The value is at this maximum value";
-    pub const IS_PRIME: &str = "The value is a prime number";
-    pub const IS_PAIR: &str = "The value is a pair number";
-    pub const IS_START_WITH: &str = "The value start with the expected value";
-    pub const IS_FINNISH_WITH: &str = "The value finnish with the expected value";
-    pub const IS_IMPAIR: &str = "The value is not a pair number";
-    pub const IS_CONTAINS: &str = "The value contains the expected value";
-    pub const SHOULD_CONTAINS: &str = "The value should be contains the expected value";
-    pub const IS_ABSOLUTE: &str = "The path is absolute";
-    pub const IS_EXISTS: &str = "The path exists";
-    pub const SHOULD_BE_EXIST: &str = "The path {} sould be exit";
-    pub const IS_RELATIVE: &str = "The path is relative";
-    pub const IS_SYMLINK: &str = "The path is a symlink";
-    pub const IS_EXECUTABLE: &str = "The file is executable";
-    pub const SHOULD_BE_EXECUTABLE: &str = "The file should be executable";
-    pub const THEORY_IS_TRUE: &str = "The theory is true";
-    pub const THEORY_SHOULD_BE_TRUE: &str = "The theory should be true";
-    pub const THEORY_IS_FALSE: &str = "The theory is false";
-    pub const THEORY_SHOULD_BE_FALSE: &str = "The theory should be false";
-    pub const IS_NOT_EXECUTABLE: &str = "The file is not an executable";
-    pub const SOULD_BE_NOT_EXECUTABLE: &str = "The file should be not an executable";
-    pub const IS_NOT_SYMLINK: &str = "The path is a symlink";
-    pub const IS_NOT_RELATIVE: &str = "The path is not relative";
-    pub const IS_NOT_EXISTS: &str = "The path not exists";
-    pub const SHOULD_NOT_EXISTS: &str = "The path should not exists";
-    pub const IS_NOT_ABSOLUTE: &str = "The path is not absolute";
-    pub const IS_NOT_FINNISH_WITH: &str = "The value don't finnish with the expected value";
-    pub const IS_NOT_CONTAINS: &str = "The value not contains the expected value";
-    pub const SHOULD_NOT_CONTAINS: &str = "The value should not contains the expected value";
-    pub const IS_NOT_PRIME: &str = "The value is not a prime number";
-    pub const IS_NOT_FULL: &str = "The value is not at this maximum value";
-    pub const IS_NOT_FILE: &str = "The file not exist";
-    pub const IS_NOT_DIRECTORY: &str = "The directory not exist";
     pub const IS_NOT_EMPTY: &str = "The value is not empty";
-    pub const IS_NOT_BETWEEN: &str = "The values aren't between the expected values";
-    pub const IS_NOT_START_WITH: &str = "The value no start with the expected value";
-    pub const PROGRESS: u64 = 500;
-    pub const NO_PROGRESS: u64 = 0;
+    pub const IS_EXISTS: &str = "The path exists";
+    pub const IS_CONTAINS: &str = "The value contains the data";
+    pub const IS_NOT_CONTAINS: &str = "The value don't contains the data";
+    pub const IS_EXECUTABLE: &str = "The assert match true, the file is executable";
+    pub const IS_NOT_EXECUTABLE: &str = "The file is not an executable";
+    pub const THEORY_IS_TRUE: &str = "The theory is true";
+    pub const THEORY_IS_FALSE: &str = "The theory if false";
+    pub const IS_NOT_EXISTS: &str = "The path not exists";
+    pub const UNIT_PROGRESS_TIME: u64 = 100;
 }

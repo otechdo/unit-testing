@@ -28,9 +28,9 @@
 
 ![tests](badges/verify.svg)
 
-![see-assert](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
+![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-testing-take.gif)
 
-![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-testing.gif)
+![see-assert](https://raw.githubusercontent.com/taishingi/unit-testing/master/assert-testing-take.gif)
 
 ## Installation
 

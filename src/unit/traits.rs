@@ -1,6 +1,15 @@
 pub mod unit {
     use std::{collections::HashSet, process::ExitCode};
 
+    pub trait Take {
+        fn assert_that(&mut self, t: bool) -> bool;
+
+        ///
+        /// # Run assert and messure execution time
+        ///
+        fn take<'a>(&'a mut self, t: bool, s: &'a str, e: &'a str) -> &mut Self;
+    }
+
     pub trait Theory {
         ///
         /// # A theory must be equal to false
@@ -48,7 +57,7 @@ pub mod unit {
         /// - `test` The test assertion
         ///
         ///
-        fn assert(&mut self, test: bool, s: &str, e: &str) -> &mut Self;
+        fn assert(&mut self, test: bool) -> bool;
 
         ///
         /// # Check if a and b are equals
