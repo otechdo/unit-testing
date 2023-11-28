@@ -69,6 +69,9 @@ pub mod unit {
             }
 
             j.end().expect("a");
+            if x.failures.get() > 0 {
+                exit(1)
+            }
             exit(0)
         }
 
