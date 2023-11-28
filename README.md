@@ -28,7 +28,9 @@
 
 ![tests](badges/verify.svg)
 
-![see](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
+![see-assert](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
+
+![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-test.gif)
 
 ## Installation
 
@@ -44,7 +46,7 @@ All tests in Assert use
 assert!(test);
 ```
 
-so if a test is not true it's fail automatically.
+So if a test is not true it's fail automatically.
 
 If you want to pass failures tests implement trait [**Testable**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L21), [**Theory**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L4) for your new struct like Unit for example.
 
