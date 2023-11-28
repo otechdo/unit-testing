@@ -46,7 +46,7 @@ assert!(test);
 
 so if a test is not true it's fail automatically.
 
-If you want to pass failures tests implement trait **Testable**, **Theory** for your new struct like **Unit** for example.
+If you want to pass failures tests implement trait [**Testable**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L21), [**Theory**](https://github.com/taishingi/unit-testing/blob/master/src/unit/traits.rs#L4) for your new struct like Unit for example.
 
 ```rust
 use unit::unit::{
