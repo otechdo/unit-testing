@@ -36,7 +36,67 @@
 cargo add unit-testing
 ```
 
-## Usage
+## Assert
+
+All tests in Assert use
+
+```rust
+assert!(test);
+```
+
+so if a test is not true it's fail automatically.
+
+If you want to pass failures tests implement trait **Testable**, **Theory** for your new struct like **Unit** for example.
+
+```rust
+use unit::unit::{
+    traits::unit::{Testable, Theory},
+};
+
+pub struct Unit {
+    assertions: Cell<usize>,
+    failures: Cell<usize>,
+    messages: Hashmap<String,String>,
+}
+
+impl Theory for Unit {
+
+}
+
+impl Testable for Unit {
+
+}
+```
+
+> Set assert callback to print the success message or the error message
+
+And use it !
+
+```rust
+use std::process::ExitCode;
+use mylib::Unit;
+
+fn ok()-> bool
+{
+    true
+}
+
+fn ko()-> bool
+{
+    false
+}
+
+fn callback(u: &mut Unit)-> &mut Unit
+{
+    u.ko(&ok).ok(&ko)
+}
+
+fn main()-> ExitCode {
+    Unit::it(vec[&callback])
+}
+```
+
+## Recommended usage
 
 ```rust
 use std::{collections::HashSet, env::consts::OS, process::ExitCode};
