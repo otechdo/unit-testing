@@ -7,11 +7,11 @@ use unit::unit::{
 };
 
 fn ok() -> bool {
-    false
+    true
 }
 
 fn ko() -> bool {
-    true
+    false
 }
 
 fn must_pass(u: &mut Unit) -> &mut Unit {
