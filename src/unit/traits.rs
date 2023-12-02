@@ -1,5 +1,6 @@
 pub mod unit {
-    use std::{collections::HashSet, process::ExitCode};
+    use std::{collections::HashSet, io, process::ExitCode};
+    use std::process::ExitStatus;
 
     pub trait Take {
         fn assert_that(&mut self, t: bool) -> bool;
@@ -25,6 +26,16 @@ pub mod unit {
         /// - `callback`    The callback to execute
         ///
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self;
+    }
+
+    pub trait Fail {
+        ///
+        /// # Check if a command fail
+        ///
+        /// - `callbacks` The callbacks to check
+        ///
+        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self;
+        fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self;
     }
 
     pub trait Testable {
@@ -161,7 +172,6 @@ pub mod unit {
         /// - `f` The file
         /// - `v` The value to check
         ///
-
         fn file_contains(&mut self, f: &str, v: &str) -> &mut Self;
 
         ///

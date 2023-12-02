@@ -1,9 +1,5 @@
 pub mod unit {
-    use crate::unit::consts::unit::{
-        ASSERT_BEGIN, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
-        ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FINNISH,
-        UNIT_PROGRESS_TIME,
-    };
+    use crate::unit::consts::unit::{ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, UNIT_PROGRESS_TIME};
 
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
@@ -26,11 +22,12 @@ pub mod unit {
     use progress_bar::*;
     use std::cell::Cell;
     use std::collections::{HashMap, HashSet};
-    use std::fs;
+    use std::{fs, io};
     use std::path::Path;
-    use std::process::{exit, ExitCode};
+    use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
+    use crate::unit::traits::unit::Fail;
 
     pub mod consts;
     pub mod enums;
@@ -70,6 +67,40 @@ pub mod unit {
                         .insert(self.f.get(), i.elapsed().as_nanos());
                 }
             };
+            self
+        }
+    }
+
+    impl Fail for Assert {
+        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self {
+            for &c in callbacks.iter() {
+                c().expect_err("not error detected");
+                self.take(true, ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
+            }
+            self
+        }
+
+        fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
+            for &c in callbacks.iter() {
+                self.take(!c(), ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
+            }
+            self
+        }
+    }
+
+    impl Fail for Unit {
+        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self {
+            for &c in callbacks.iter() {
+                c().expect_err("not error detected");
+                self.take(true, IS_FAIL, IS_NOT_FAIL);
+            }
+            self
+        }
+
+        fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
+            for &c in callbacks.iter() {
+                self.take(!c(), IS_FAIL, IS_NOT_FAIL);
+            }
             self
         }
     }
@@ -248,7 +279,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -264,7 +295,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -281,7 +312,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -457,7 +488,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                    .as_str(),
+                        .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -471,7 +502,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -484,6 +515,7 @@ pub mod unit {
 #[cfg(test)]
 mod test {
     use std::{collections::HashSet, env::consts::OS, process::ExitCode};
+    use std::process::{Command, ExitStatus};
 
     use num::Float;
     use unit::{
@@ -492,6 +524,7 @@ mod test {
     };
 
     use crate::unit;
+    use crate::unit::traits::unit::Fail;
 
     fn ok() -> bool {
         true
@@ -579,11 +612,26 @@ mod test {
         u.begin_with(OS, "linux").end_with(OS, "linux")
     }
 
+    fn windows_cls() -> std::io::Result<ExitStatus>
+    {
+        Command::new("cls").status()
+    }
+
+    fn is_windows() -> bool
+    {
+        OS.eq("windows")
+    }
+
+    fn fail(u: &mut Assert) -> &mut Assert {
+        u.fail(vec![&pythagore_not_work, &is_windows]).command_fail(vec![&windows_cls])
+    }
+
     #[test]
     pub fn all() -> ExitCode {
         Assert::it(vec![
             &must_between,
             &start,
+            &fail,
             &programs,
             &must_theory,
             &no_programs,

@@ -1,5 +1,7 @@
 pub mod unit {
     pub const ASSERT_BEGIN: &str = "The value begin with the expected value";
+    pub const ASSERT_FAIL: &str = "The callback has a failure exist status";
+    pub const ASSERT_SHOULD_BE_FAIL: &str = "The callback should be have a failure exist status";
     pub const ASSERT_FINNISH: &str = "The value finnish by the expected value";
     pub const ASSERT_SHOULD_BE_BEGIN: &str = "The value should be begin with value";
     pub const ASSERT_SHOULD_BE_FINNISH: &str = "The value should be finnish with the value";
@@ -49,6 +51,8 @@ pub mod unit {
     pub const ASSERT_SOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
     pub const ASSERT_PROGRESS_TIME: u64 = 100;
 
+    pub const IS_FAIL: &str = "The callback has a failure exist status";
+    pub const IS_NOT_FAIL: &str = "The callback has not a failure exit status";
     pub const IS_BEGIN: &str = "The value begin with the expected value";
     pub const IS_FINNISH: &str = "The value finnish by the expected value";
     pub const IS_NOT_FINNISH: &str = "The value don't finnish by the expected value";
