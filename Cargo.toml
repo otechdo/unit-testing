@@ -1,7 +1,7 @@
 workspace = { members = ["tests"] }
 [package]
 name = "unit-testing"
-version = "2.0.4"
+version = "2.0.5"
 edition = "2021"
 description = "A unit testing library"
 license = "GPL-2.0-or-later"
@@ -26,9 +26,7 @@ path = "src/tdd.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
-ansi_codes = "0.2.1"
 colored_truecolor = "0.1.0"
-crossterm_cursor = "0.4.0"
 is_executable = "1.0.1"
 num = "0.4.1"
 progress_bar = "1.0.5"

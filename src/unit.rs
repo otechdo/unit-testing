@@ -22,7 +22,6 @@ pub mod unit {
     use self::traits::unit::{Take, Testable, Theory};
     use crate::unit::traits::unit::Failure;
     use colored_truecolor::Colorize;
-    use crossterm_cursor::TerminalCursor;
     use is_executable::IsExecutable;
     use progress_bar::*;
     use std::cell::Cell;
@@ -289,7 +288,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -305,7 +304,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -322,7 +321,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -356,15 +355,11 @@ pub mod unit {
                 c: Cell::new(0),
                 take: HashMap::new(),
             };
-            let cursor = TerminalCursor::new();
-            cursor.hide().expect("failed to hide cursor");
             let mut j = &mut x;
             for c in callbacks.iter() {
                 j = c(j);
             }
-
-            j.end().expect("a");
-            cursor.show().expect("failed to re show cursor");
+            j.end().expect("failure");
             exit(0)
         }
 
@@ -498,7 +493,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                    .as_str(),
+                        .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -512,7 +507,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
