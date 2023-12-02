@@ -5,7 +5,7 @@ pub mod unit {
         fn assert_that(&mut self, t: bool) -> bool;
 
         ///
-        /// # Run assert and messure execution time
+        /// # Run assert and measure execution time
         ///
         fn take<'a>(&'a mut self, t: bool, s: &'a str, e: &'a str) -> &mut Self;
     }
@@ -21,7 +21,7 @@ pub mod unit {
         ///
         /// # Test a theory
         ///
-        /// - `expected`    The expctecd callback result
+        /// - `expected`    The expect callback result
         /// - `callback`    The callback to execute
         ///
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self;
@@ -29,7 +29,7 @@ pub mod unit {
 
     pub trait Testable {
         ///
-        /// # Contructor
+        /// # Constructor
         ///
         /// - `callbacks` The vec list of callback
         ///
@@ -111,9 +111,9 @@ pub mod unit {
         ///
         /// # Check if p is a program
         ///
-        /// - `p` The proggram path
+        /// - `p` The program path
         ///
-        fn is_program(&mut self, p: &str) -> &mut Self;
+        fn program(&mut self, p: &str) -> &mut Self;
 
         ///
         /// # Check if p is not a program
@@ -174,7 +174,7 @@ pub mod unit {
         ///
         /// # Check if a path not exist
         ///
-        /// - `p` The path to check the no existance
+        /// - `p` The path to check the no existence
         ///  
         fn not_exists(&mut self, p: &str) -> &mut Self;
 

@@ -1,5 +1,4 @@
 pub mod unit {
-
     use crate::unit::consts::unit::{ASSERT_PROGRESS_TIME, UNIT_PROGRESS_TIME};
 
     use self::consts::unit::{
@@ -49,6 +48,10 @@ pub mod unit {
     }
 
     impl Take for Unit {
+        fn assert_that(&mut self, t: bool) -> bool {
+            self.assert(t)
+        }
+
         fn take<'a>(&'a mut self, t: bool, s: &'a str, e: &'a str) -> &mut Self {
             let i = Instant::now();
             match self.assert_that(t) {
@@ -65,13 +68,13 @@ pub mod unit {
             };
             self
         }
-
-        fn assert_that(&mut self, t: bool) -> bool {
-            self.assert(t)
-        }
     }
 
     impl Take for Assert {
+        fn assert_that(&mut self, t: bool) -> bool {
+            self.assert(t)
+        }
+
         fn take<'a>(&'a mut self, t: bool, s: &'a str, _e: &'a str) -> &mut Self {
             let i = Instant::now();
             match self.assert_that(t) {
@@ -82,10 +85,6 @@ pub mod unit {
                 false => panic!("not possible"),
             };
             self
-        }
-
-        fn assert_that(&mut self, t: bool) -> bool {
-            self.assert(t)
         }
     }
 
@@ -163,7 +162,7 @@ pub mod unit {
             self.take(a.contains(&b), IS_CONTAINS, IS_NOT_CONTAINS)
         }
 
-        fn is_program(&mut self, p: &str) -> &mut Self {
+        fn program(&mut self, p: &str) -> &mut Self {
             self.take(
                 Path::new(p).is_executable(),
                 IS_EXECUTABLE,
@@ -220,14 +219,14 @@ pub mod unit {
             set_progress_bar_action("[ :: ]", Color::Green, Style::Bold);
 
             let mut failure = self.failure.values();
-            let mut suceess = self.success.values();
+            let mut success = self.success.values();
             let mut success_take = self.success_take.values();
             let mut failures_take = self.failure_take.values();
 
             for _i in 0..total {
                 sleep(Duration::from_millis(UNIT_PROGRESS_TIME));
 
-                if let Some(x) = suceess.next() {
+                if let Some(x) = success.next() {
                     print_progress_bar_info(
                         "[ OK ]",
                         format!(
@@ -298,20 +297,6 @@ pub mod unit {
     }
 
     impl Testable for Assert {
-        fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
-            self.take(f(), ASSERT_OK, ASSERT_SHOULD_BE_OK)
-        }
-
-        fn ko(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
-            self.take(!f(), ASSERT_OK, ASSERT_SHOULD_BE_KO)
-        }
-
-        fn assert(&mut self, test: bool) -> bool {
-            assert!(test);
-            self.c.set(self.c.get() + 1);
-            true
-        }
-
         fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode {
             let mut x = Self {
                 messages: HashMap::new(),
@@ -328,6 +313,101 @@ pub mod unit {
             j.end().expect("a");
             cursor.show().expect("failed to re show cursor");
             exit(0)
+        }
+
+        fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
+            self.take(f(), ASSERT_OK, ASSERT_SHOULD_BE_OK)
+        }
+
+        fn ko(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
+            self.take(!f(), ASSERT_OK, ASSERT_SHOULD_BE_KO)
+        }
+
+        fn assert(&mut self, test: bool) -> bool {
+            assert!(test);
+            self.c.set(self.c.get() + 1);
+            true
+        }
+
+        fn equals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self {
+            self.take(a == b, ASSERT_EQUALS, ASSERT_SHOULD_BE_EQUALS)
+        }
+
+        fn unequals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self {
+            self.take(a != b, ASSERT_UNEQUALS, ASSERT_SHOULD_BE_UNEQUALS)
+        }
+        fn superior<T: PartialOrd>(&mut self, a: T, min: T) -> &mut Self {
+            self.take(a > min, ASSERT_SUPERIOR, ASSERT_SHOULD_BE_SUPERIOR)
+        }
+
+        fn inferior<T: PartialOrd>(&mut self, a: T, max: T) -> &mut Self {
+            self.take(a < max, ASSERT_INFERIOR, ASSERT_SHOULD_BE_INFERIOR)
+        }
+
+        fn between<T: PartialOrd>(&mut self, a: T, min: T, max: T) -> &mut Self {
+            self.take(a > min && a < max, ASSERT_BETWEEN, ASSERT_SHOULD_BE_BETWEEN)
+        }
+
+        fn vec_contains<T: PartialEq>(&mut self, a: Vec<T>, b: T) -> &mut Self {
+            self.take(a.contains(&b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
+        }
+
+        fn program(&mut self, p: &str) -> &mut Self {
+            self.take(
+                Path::new(p).is_executable(),
+                ASSERT_IS_EXECUTABLE,
+                ASSERT_SHOULD_BE_EXECUTABLE,
+            )
+        }
+
+        fn not_program(&mut self, p: &str) -> &mut Self {
+            self.take(
+                !Path::new(p).is_executable(),
+                ASSERT_IS_NOT_EXECUTABLE,
+                ASSERT_SHOULD_BE_NOT_EXECUTABLE,
+            )
+        }
+
+        fn vec_no_contains<T: PartialEq>(&mut self, a: Vec<T>, b: T) -> &mut Self {
+            self.take(
+                !a.contains(&b),
+                ASSERT_NOT_CONTAINS,
+                ASSERT_SHOULD_BE_NOT_CONTAINS,
+            )
+        }
+
+        fn option_contains<T: PartialEq>(&mut self, a: Option<T>, b: T) -> &mut Self {
+            self.take(a.expect("") == b, ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
+        }
+
+        fn hash_contains(&mut self, a: &mut HashSet<String>, b: String) -> &mut Self {
+            self.take(a.contains(&b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
+        }
+
+        fn string_contains(&mut self, a: &str, b: &str) -> &mut Self {
+            self.take(a.contains(b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
+        }
+
+        fn file_contains(&mut self, f: &str, v: &str) -> &mut Self {
+            self.take(
+                fs::read_to_string(f)
+                    .unwrap_or_else(|_| panic!("The filename {} has not been founded", f))
+                    .contains(v),
+                ASSERT_CONTAINS,
+                ASSERT_SHOULD_CONTAINS,
+            )
+        }
+
+        fn exists(&mut self, p: &str) -> &mut Self {
+            self.take(Path::new(p).exists(), ASSERT_EXISTS, ASSERT_SOULD_BE_EXISTS)
+        }
+
+        fn not_exists(&mut self, p: &str) -> &mut Self {
+            self.take(
+                !Path::new(p).exists(),
+                ASSERT_EXISTS,
+                ASSERT_SOULD_BE_EXISTS,
+            )
         }
 
         fn end(&mut self) -> Result<&mut Self, String> {
@@ -370,93 +450,11 @@ pub mod unit {
             finalize_progress_bar();
             Ok(self)
         }
-
-        fn exists(&mut self, p: &str) -> &mut Self {
-            self.take(Path::new(p).exists(), ASSERT_EXISTS, ASSERT_SOULD_BE_EXISTS)
-        }
-        fn equals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self {
-            self.take(a == b, ASSERT_EQUALS, ASSERT_SHOULD_BE_EQUALS)
-        }
-
-        fn unequals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self {
-            self.take(a != b, ASSERT_UNEQUALS, ASSERT_SHOULD_BE_UNEQUALS)
-        }
-
-        fn superior<T: PartialOrd>(&mut self, a: T, min: T) -> &mut Self {
-            self.take(a > min, ASSERT_SUPERIOR, ASSERT_SHOULD_BE_SUPERIOR)
-        }
-
-        fn inferior<T: PartialOrd>(&mut self, a: T, max: T) -> &mut Self {
-            self.take(a < max, ASSERT_INFERIOR, ASSERT_SHOULD_BE_INFERIOR)
-        }
-
-        fn between<T: PartialOrd>(&mut self, a: T, min: T, max: T) -> &mut Self {
-            self.take(a > min && a < max, ASSERT_BETWEEN, ASSERT_SHOULD_BE_BETWEEN)
-        }
-
-        fn vec_contains<T: PartialEq>(&mut self, a: Vec<T>, b: T) -> &mut Self {
-            self.take(a.contains(&b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
-        }
-
-        fn option_contains<T: PartialEq>(&mut self, a: Option<T>, b: T) -> &mut Self {
-            self.take(a.expect("") == b, ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
-        }
-
-        fn string_contains(&mut self, a: &str, b: &str) -> &mut Self {
-            self.take(a.contains(b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
-        }
-
-        fn file_contains(&mut self, f: &str, v: &str) -> &mut Self {
-            self.take(
-                fs::read_to_string(f)
-                    .unwrap_or_else(|_| panic!("The filename {} has not been founded", f))
-                    .contains(v),
-                ASSERT_CONTAINS,
-                ASSERT_SHOULD_CONTAINS,
-            )
-        }
-
-        fn hash_contains(&mut self, a: &mut HashSet<String>, b: String) -> &mut Self {
-            self.take(a.contains(&b), ASSERT_CONTAINS, ASSERT_SHOULD_CONTAINS)
-        }
-
-        fn not_exists(&mut self, p: &str) -> &mut Self {
-            self.take(
-                !Path::new(p).exists(),
-                ASSERT_EXISTS,
-                ASSERT_SOULD_BE_EXISTS,
-            )
-        }
-
-        fn vec_no_contains<T: PartialEq>(&mut self, a: Vec<T>, b: T) -> &mut Self {
-            self.take(
-                !a.contains(&b),
-                ASSERT_NOT_CONTAINS,
-                ASSERT_SHOULD_BE_NOT_CONTAINS,
-            )
-        }
-
-        fn is_program(&mut self, p: &str) -> &mut Self {
-            self.take(
-                Path::new(p).is_executable(),
-                ASSERT_IS_EXECUTABLE,
-                ASSERT_SHOULD_BE_EXECUTABLE,
-            )
-        }
-
-        fn not_program(&mut self, p: &str) -> &mut Self {
-            self.take(
-                !Path::new(p).is_executable(),
-                ASSERT_IS_NOT_EXECUTABLE,
-                ASSERT_SHOULD_BE_NOT_EXECUTABLE,
-            )
-        }
     }
 }
 
 #[cfg(test)]
 mod test {
-
     use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
     use num::Float;
@@ -486,7 +484,7 @@ mod test {
     fn must_linux(u: &mut Assert) -> &mut Assert {
         u.not_exists("C:\\Users")
             .not_exists("C:\\ProgramData")
-            .not_exists("C:\\WINDOWS\\symtem32")
+            .not_exists("C:\\WINDOWS\\system32")
     }
 
     fn must_equals(u: &mut Assert) -> &mut Assert {
@@ -499,7 +497,7 @@ mod test {
 
     fn must_contains(u: &mut Assert) -> &mut Assert {
         let mut v: Vec<String> = Vec::new();
-        let o = Option::Some("a".to_string());
+        let o = Some("a".to_string());
         v.push("value".to_string());
         v.push("h".to_string());
         u.vec_contains(v, "h".to_string())
@@ -522,7 +520,7 @@ mod test {
     }
 
     fn programs(u: &mut Assert) -> &mut Assert {
-        u.is_program("/usr/bin/git").is_program("/usr/bin/curl")
+        u.program("/usr/bin/git").program("/usr/bin/curl")
     }
 
     fn no_programs(u: &mut Assert) -> &mut Assert {
@@ -533,7 +531,7 @@ mod test {
         u.inferior(10, 50).inferior(50, 200)
     }
 
-    fn must_beetween(u: &mut Assert) -> &mut Assert {
+    fn must_between(u: &mut Assert) -> &mut Assert {
         u.between(10, 5, 50).between(50, 10, 200)
     }
 
@@ -548,10 +546,11 @@ mod test {
     fn must_theory(u: &mut Assert) -> &mut Assert {
         u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
     }
+
     #[test]
     pub fn all() -> ExitCode {
         Assert::it(vec![
-            &must_beetween,
+            &must_between,
             &programs,
             &must_theory,
             &no_programs,

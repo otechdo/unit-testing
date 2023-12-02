@@ -25,7 +25,7 @@ fn must_exists(u: &mut Assert) -> &mut Assert {
 fn must_linux(u: &mut Assert) -> &mut Assert {
     u.not_exists("C:\\Users")
         .not_exists("C:\\ProgramData")
-        .not_exists("C:\\WINDOWS\\symtem32")
+        .not_exists("C:\\WINDOWS\\system32")
 }
 
 fn must_equals(u: &mut Assert) -> &mut Assert {
@@ -61,7 +61,7 @@ fn must_superior(u: &mut Assert) -> &mut Assert {
 }
 
 fn programs(u: &mut Assert) -> &mut Assert {
-    u.is_program("/usr/bin/git").is_program("/usr/bin/curl")
+    u.program("/usr/bin/git").program("/usr/bin/curl")
 }
 fn no_programs(u: &mut Assert) -> &mut Assert {
     u.not_program("cmd")
