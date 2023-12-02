@@ -28,7 +28,7 @@ pub mod unit {
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self;
     }
 
-    pub trait Fail {
+    pub trait Failure {
         ///
         /// # Check if a command fail
         ///

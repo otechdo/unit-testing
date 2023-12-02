@@ -20,7 +20,7 @@ pub mod unit {
     };
 
     use self::traits::unit::{Take, Testable, Theory};
-    use crate::unit::traits::unit::Fail;
+    use crate::unit::traits::unit::Failure;
     use colored_truecolor::Colorize;
     use crossterm_cursor::TerminalCursor;
     use is_executable::IsExecutable;
@@ -75,7 +75,7 @@ pub mod unit {
         }
     }
 
-    impl Fail for Assert {
+    impl Failure for Assert {
         fn command_fail(
             &mut self,
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
@@ -95,7 +95,7 @@ pub mod unit {
         }
     }
 
-    impl Fail for Unit {
+    impl Failure for Unit {
         fn command_fail(
             &mut self,
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
@@ -534,7 +534,7 @@ mod test {
     };
 
     use crate::unit;
-    use crate::unit::traits::unit::Fail;
+    use crate::unit::traits::unit::Failure;
 
     fn ok() -> bool {
         true
