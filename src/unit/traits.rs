@@ -179,8 +179,24 @@ pub mod unit {
         fn not_exists(&mut self, p: &str) -> &mut Self;
 
         ///
+        /// # Check if a string begin with the expected value
+        ///
+        /// - `actual`   The actual value
+        /// - `expected` The expected value
+        ///
+        fn begin_with(&mut self, actual: &str, expected: &str) -> &mut Self;
+
+        ///
+        ///  # Check if a string finnish with the expected value
+        ///
+        /// - `actual`      The actual value
+        /// - `expected`    The expected value
+        ///
+        fn end_with(&mut self, actual: &str, expected: &str) -> &mut Self;
+
+        ///
         /// # Show assertions
-        ///  
+        ///
         fn end(&mut self) -> Result<&mut Self, String>;
     }
 }

@@ -1,5 +1,9 @@
 pub mod unit {
-    use crate::unit::consts::unit::{ASSERT_PROGRESS_TIME, UNIT_PROGRESS_TIME};
+    use crate::unit::consts::unit::{
+        ASSERT_BEGIN, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
+        ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FINNISH,
+        UNIT_PROGRESS_TIME,
+    };
 
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
@@ -212,6 +216,14 @@ pub mod unit {
             self.take(!Path::new(p).exists(), IS_NOT_EXISTS, IS_EXISTS)
         }
 
+        fn begin_with(&mut self, actual: &str, expected: &str) -> &mut Self {
+            self.take(actual.starts_with(expected), IS_BEGIN, IS_NOT_BEGIN)
+        }
+
+        fn end_with(&mut self, actual: &str, expected: &str) -> &mut Self {
+            self.take(actual.ends_with(expected), IS_FINNISH, IS_NOT_FINNISH)
+        }
+
         fn end(&mut self) -> Result<&mut Self, String> {
             let total: usize = self.f.get() + self.s.get();
             println!();
@@ -410,6 +422,22 @@ pub mod unit {
             )
         }
 
+        fn begin_with(&mut self, actual: &str, expected: &str) -> &mut Self {
+            self.take(
+                actual.starts_with(expected),
+                ASSERT_BEGIN,
+                ASSERT_SHOULD_BE_BEGIN,
+            )
+        }
+
+        fn end_with(&mut self, actual: &str, expected: &str) -> &mut Self {
+            self.take(
+                actual.ends_with(expected),
+                ASSERT_FINNISH,
+                ASSERT_SHOULD_BE_FINNISH,
+            )
+        }
+
         fn end(&mut self) -> Result<&mut Self, String> {
             let total: usize = self.c.get();
             println!();
@@ -547,10 +575,15 @@ mod test {
         u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
     }
 
+    fn start(u: &mut Assert) -> &mut Assert {
+        u.begin_with(OS, "linux").end_with(OS, "linux")
+    }
+
     #[test]
     pub fn all() -> ExitCode {
         Assert::it(vec![
             &must_between,
+            &start,
             &programs,
             &must_theory,
             &no_programs,

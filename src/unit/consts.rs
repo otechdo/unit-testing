@@ -1,11 +1,14 @@
 pub mod unit {
-
+    pub const ASSERT_BEGIN: &str = "The value begin with the expected value";
+    pub const ASSERT_FINNISH: &str = "The value finnish by the expected value";
+    pub const ASSERT_SHOULD_BE_BEGIN: &str = "The value should be begin with value";
+    pub const ASSERT_SHOULD_BE_FINNISH: &str = "The value should be finnish with the value";
     pub const ASSERT_OK: &str = "The value match true";
     pub const ASSERT_SHOULD_BE_OK: &str = "The value match false and should be match true";
     pub const ASSERT_KO: &str = "The value match false";
     pub const ASSERT_SHOULD_BE_KO: &str = "The value match true and should be match false";
     pub const ASSERT_EQUALS: &str = "The values are equals";
-    pub const ASSERT_SHOULD_BE_EQUALS: &str = "The values match unequality but should be equals";
+    pub const ASSERT_SHOULD_BE_EQUALS: &str = "The values match inequality but should be equals";
     pub const ASSERT_UNEQUALS: &str = "The values are unequals";
     pub const ASSERT_SHOULD_BE_UNEQUALS: &str =
         "The values are equals but values should be unequals";
@@ -35,7 +38,7 @@ pub mod unit {
         "The theory match false but she should be match true";
     pub const ASSERT_THEORY_IS_FALSE: &str = "The theory is false";
     pub const ASSERT_THEORY_SHOULD_BE_FALSE: &str =
-        "The theory fmatch true she should be match false";
+        "The theory match true she should be match false";
     pub const ASSERT_IS_NOT_EXECUTABLE: &str = "The file is not an executable";
     pub const ASSERT_SHOULD_BE_NOT_EXECUTABLE: &str = "The file is executable and sould be not";
     pub const ASSERT_NOT_EXISTS: &str = "The assertion match true, the given path not exists";
@@ -46,6 +49,10 @@ pub mod unit {
     pub const ASSERT_SOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
     pub const ASSERT_PROGRESS_TIME: u64 = 100;
 
+    pub const IS_BEGIN: &str = "The value begin with the expected value";
+    pub const IS_FINNISH: &str = "The value finnish by the expected value";
+    pub const IS_NOT_FINNISH: &str = "The value don't finnish by the expected value";
+    pub const IS_NOT_BEGIN: &str = "The value not begin with the expected value";
     pub const IS_OK: &str = "The test match true";
     pub const IS_KO: &str = "The test match false";
     pub const IS_EQUALS: &str = "The values are equals";
