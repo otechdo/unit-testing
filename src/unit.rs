@@ -1,5 +1,9 @@
 pub mod unit {
-    use crate::unit::consts::unit::{ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, UNIT_PROGRESS_TIME};
+    use crate::unit::consts::unit::{
+        ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
+        ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FAIL, IS_FINNISH,
+        IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, UNIT_PROGRESS_TIME,
+    };
 
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
@@ -16,18 +20,18 @@ pub mod unit {
     };
 
     use self::traits::unit::{Take, Testable, Theory};
+    use crate::unit::traits::unit::Fail;
     use colored_truecolor::Colorize;
     use crossterm_cursor::TerminalCursor;
     use is_executable::IsExecutable;
     use progress_bar::*;
     use std::cell::Cell;
     use std::collections::{HashMap, HashSet};
-    use std::{fs, io};
     use std::path::Path;
     use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
-    use crate::unit::traits::unit::Fail;
+    use std::{fs, io};
 
     pub mod consts;
     pub mod enums;
@@ -72,7 +76,10 @@ pub mod unit {
     }
 
     impl Fail for Assert {
-        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self {
+        fn command_fail(
+            &mut self,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+        ) -> &mut Self {
             for &c in callbacks.iter() {
                 c().expect_err("not error detected");
                 self.take(true, ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
@@ -89,7 +96,10 @@ pub mod unit {
     }
 
     impl Fail for Unit {
-        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self {
+        fn command_fail(
+            &mut self,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+        ) -> &mut Self {
             for &c in callbacks.iter() {
                 c().expect_err("not error detected");
                 self.take(true, IS_FAIL, IS_NOT_FAIL);
@@ -279,7 +289,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -295,7 +305,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -312,7 +322,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -488,7 +498,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                        .as_str(),
+                    .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -502,7 +512,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -514,8 +524,8 @@ pub mod unit {
 
 #[cfg(test)]
 mod test {
-    use std::{collections::HashSet, env::consts::OS, process::ExitCode};
     use std::process::{Command, ExitStatus};
+    use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
     use num::Float;
     use unit::{
@@ -612,18 +622,17 @@ mod test {
         u.begin_with(OS, "linux").end_with(OS, "linux")
     }
 
-    fn windows_cls() -> std::io::Result<ExitStatus>
-    {
+    fn windows_cls() -> std::io::Result<ExitStatus> {
         Command::new("cls").status()
     }
 
-    fn is_windows() -> bool
-    {
+    fn is_windows() -> bool {
         OS.eq("windows")
     }
 
     fn fail(u: &mut Assert) -> &mut Assert {
-        u.fail(vec![&pythagore_not_work, &is_windows]).command_fail(vec![&windows_cls])
+        u.fail(vec![&pythagore_not_work, &is_windows])
+            .command_fail(vec![&windows_cls])
     }
 
     #[test]

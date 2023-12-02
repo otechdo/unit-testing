@@ -1,6 +1,6 @@
 pub mod unit {
-    use std::{collections::HashSet, io, process::ExitCode};
     use std::process::ExitStatus;
+    use std::{collections::HashSet, io, process::ExitCode};
 
     pub trait Take {
         fn assert_that(&mut self, t: bool) -> bool;
@@ -34,7 +34,10 @@ pub mod unit {
         ///
         /// - `callbacks` The callbacks to check
         ///
-        fn command_fail(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self;
+        fn command_fail(
+            &mut self,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+        ) -> &mut Self;
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self;
     }
 
