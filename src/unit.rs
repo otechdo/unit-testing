@@ -1,5 +1,10 @@
 pub mod unit {
-    use crate::unit::consts::unit::{ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_SUCCESS, ASSERT_SUCCESS, IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, IS_NOT_SUCCESS, IS_SUCCESS, UNIT_PROGRESS_TIME};
+    use crate::unit::consts::unit::{
+        ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
+        ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_SUCCESS, ASSERT_SUCCESS,
+        IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, IS_NOT_SUCCESS,
+        IS_SUCCESS, UNIT_PROGRESS_TIME,
+    };
 
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
@@ -22,12 +27,12 @@ pub mod unit {
     use progress_bar::*;
     use std::cell::Cell;
     use std::collections::{HashMap, HashSet};
+    use std::fs;
+    use std::io::Error;
     use std::path::Path;
     use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
-    use std::fs;
-    use std::io::Error;
 
     pub mod consts;
     pub mod enums;
@@ -50,8 +55,7 @@ pub mod unit {
 
     impl Success for Unit {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
-            for &c in callbacks.iter()
-            {
+            for &c in callbacks.iter() {
                 self.take(c().unwrap().success(), IS_SUCCESS, IS_NOT_SUCCESS);
             }
             self
@@ -68,7 +72,11 @@ pub mod unit {
     impl Success for Assert {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
             for &c in callbacks.iter() {
-                self.take(c().unwrap().success(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
+                self.take(
+                    c().unwrap().success(),
+                    ASSERT_SUCCESS,
+                    ASSERT_SHOULD_BE_SUCCESS,
+                );
             }
             self
         }
@@ -318,7 +326,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -334,7 +342,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -351,7 +359,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -523,7 +531,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                        .as_str(),
+                    .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -537,7 +545,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -665,8 +673,7 @@ mod test {
     }
 
     fn success(u: &mut Assert) -> &mut Assert {
-        u.success(vec![&ok])
-            .run(vec![&linux])
+        u.success(vec![&ok]).run(vec![&linux])
     }
 
     #[test]

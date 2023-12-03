@@ -53,10 +53,7 @@ pub mod unit {
         ///
         /// - `callbacks` The callbacks to check
         ///
-        fn run(
-            &mut self,
-            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
-        ) -> &mut Self;
+        fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>) -> &mut Self;
 
         ///
         /// # Check if a callbacks return true
