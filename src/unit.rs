@@ -1,9 +1,5 @@
 pub mod unit {
-    use crate::unit::consts::unit::{
-        ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
-        ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, IS_BEGIN, IS_FAIL, IS_FINNISH,
-        IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, UNIT_PROGRESS_TIME,
-    };
+    use crate::unit::consts::unit::{ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_SUCCESS, ASSERT_SUCCESS, IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, IS_NOT_SUCCESS, IS_SUCCESS, UNIT_PROGRESS_TIME};
 
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
@@ -20,7 +16,7 @@ pub mod unit {
     };
 
     use self::traits::unit::{Take, Testable, Theory};
-    use crate::unit::traits::unit::Failure;
+    use crate::unit::traits::unit::{Failure, Success};
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
     use progress_bar::*;
@@ -30,7 +26,8 @@ pub mod unit {
     use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
-    use std::{fs, io};
+    use std::fs;
+    use std::io::Error;
 
     pub mod consts;
     pub mod enums;
@@ -49,6 +46,39 @@ pub mod unit {
         failure_take: HashMap<usize, u128>,
         success: HashMap<usize, String>,
         failure: HashMap<usize, String>,
+    }
+
+    impl Success for Unit {
+        fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
+            for &c in callbacks.iter()
+            {
+                self.take(c().unwrap().success(), IS_SUCCESS, IS_NOT_SUCCESS);
+            }
+            self
+        }
+
+        fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
+            for &c in callbacks.iter() {
+                self.take(c(), IS_SUCCESS, IS_FAIL);
+            }
+            self
+        }
+    }
+
+    impl Success for Assert {
+        fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
+            for &c in callbacks.iter() {
+                self.take(c().unwrap().success(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
+            }
+            self
+        }
+
+        fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
+            for &c in callbacks.iter() {
+                self.take(c(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
+            }
+            self
+        }
     }
 
     impl Take for Unit {
@@ -77,7 +107,7 @@ pub mod unit {
     impl Failure for Assert {
         fn command_fail(
             &mut self,
-            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
             for &c in callbacks.iter() {
                 c().expect_err("not error detected");
@@ -97,7 +127,7 @@ pub mod unit {
     impl Failure for Unit {
         fn command_fail(
             &mut self,
-            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
             for &c in callbacks.iter() {
                 c().expect_err("not error detected");
@@ -288,7 +318,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -304,7 +334,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -321,7 +351,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -356,7 +386,7 @@ pub mod unit {
                 take: HashMap::new(),
             };
             let mut j = &mut x;
-            for c in callbacks.iter() {
+            for &c in callbacks.iter() {
                 j = c(j);
             }
             j.end().expect("failure");
@@ -493,7 +523,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                    .as_str(),
+                        .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -507,7 +537,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -529,7 +559,7 @@ mod test {
     };
 
     use crate::unit;
-    use crate::unit::traits::unit::Failure;
+    use crate::unit::traits::unit::{Failure, Success};
 
     fn ok() -> bool {
         true
@@ -621,6 +651,10 @@ mod test {
         Command::new("cls").status()
     }
 
+    fn linux() -> std::io::Result<ExitStatus> {
+        Command::new("ls").status()
+    }
+
     fn is_windows() -> bool {
         OS.eq("windows")
     }
@@ -630,12 +664,18 @@ mod test {
             .command_fail(vec![&windows_cls])
     }
 
+    fn success(u: &mut Assert) -> &mut Assert {
+        u.success(vec![&ok])
+            .run(vec![&linux])
+    }
+
     #[test]
     pub fn all() -> ExitCode {
         Assert::it(vec![
             &must_between,
             &start,
             &fail,
+            &success,
             &programs,
             &must_theory,
             &no_programs,

@@ -47,6 +47,25 @@ pub mod unit {
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self;
     }
 
+    pub trait Success {
+        ///
+        /// # Check if a command success
+        ///
+        /// - `callbacks` The callbacks to check
+        ///
+        fn run(
+            &mut self,
+            callbacks: Vec<&dyn Fn() -> Result<ExitStatus, io::Error>>,
+        ) -> &mut Self;
+
+        ///
+        /// # Check if a callbacks return true
+        ///
+        /// - `callbacks` The callbacks to check
+        ///
+        fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self;
+    }
+
     pub trait Testable {
         ///
         /// # Constructor
