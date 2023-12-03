@@ -21,6 +21,7 @@ pub mod unit {
     };
 
     use self::traits::unit::{Take, Testable, Theory};
+    use crate::unit::describe::unit::It;
     use crate::unit::traits::unit::{Failure, Success};
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
@@ -37,6 +38,7 @@ pub mod unit {
     pub mod consts;
     pub mod enums;
     pub mod traits;
+    pub mod describe;
 
     pub struct Assert {
         c: Cell<usize>,
@@ -51,6 +53,35 @@ pub mod unit {
         failure_take: HashMap<usize, u128>,
         success: HashMap<usize, String>,
         failure: HashMap<usize, String>,
+    }
+
+    pub struct Describe {}
+
+    impl It for Describe {
+        fn it<T: PartialEq>(description: &str, expected: T, callback: &dyn Fn() -> T) {
+            let i: Instant = Instant::now();
+            if callback().eq(&expected) {
+                println!("     {}",
+                         format!("{} {} {} {} {}",
+                                 "[ ✓ ]".green().bold(),
+                                 description.blue().bold(),
+                                 "take".white().bold(),
+                                 i.elapsed().as_nanos().to_string().cyan().bold(),
+                                 "ns".blue().bold()
+                         ).as_str()
+                );
+            } else {
+                println!("     {}",
+                         format!("{} {} {} {} {}",
+                                 "[ ⨯ ]".red().bold(),
+                                 description.purple().bold(),
+                                 "take".white().bold(),
+                                 i.elapsed().as_nanos().to_string().cyan().bold(),
+                                 "ns".blue().bold()
+                         ).as_str()
+                );
+            }
+        }
     }
 
     impl Success for Unit {
@@ -304,7 +335,6 @@ pub mod unit {
 
         fn end(&mut self) -> Result<&mut Self, String> {
             let total: usize = self.f.get() + self.s.get();
-            println!();
             init_progress_bar_with_eta(total);
             set_progress_bar_action("[ :: ]", Color::Green, Style::Bold);
 
@@ -326,7 +356,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -342,7 +372,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                        .as_str(),
+                            .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -359,7 +389,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -514,7 +544,6 @@ pub mod unit {
 
         fn end(&mut self) -> Result<&mut Self, String> {
             let total: usize = self.c.get();
-            println!();
             init_progress_bar_with_eta(total);
             set_progress_bar_action("[ ✓ ]", Color::Green, Style::Bold);
 
@@ -531,7 +560,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                    .as_str(),
+                        .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -545,7 +574,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                .as_str(),
+                    .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -567,7 +596,9 @@ mod test {
     };
 
     use crate::unit;
+    use crate::unit::describe::unit::It;
     use crate::unit::traits::unit::{Failure, Success};
+    use crate::unit::Describe;
 
     fn ok() -> bool {
         true
@@ -678,6 +709,9 @@ mod test {
 
     #[test]
     pub fn all() -> ExitCode {
+        Describe::it("Ok should be return true", true, &ok);
+        Describe::it("Ko should be return false", false, &ko);
+
         Assert::it(vec![
             &must_between,
             &start,

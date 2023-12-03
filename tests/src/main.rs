@@ -1,10 +1,8 @@
 use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
 use num::Float;
-use unit::unit::{
-    traits::unit::{Testable, Theory},
-    Assert,
-};
+use unit::unit::{traits::unit::{Testable, Theory}, Assert, Describe};
+use unit::unit::describe::unit::It;
 
 fn ok() -> bool {
     true
@@ -38,7 +36,7 @@ fn must_equals(u: &mut Assert) -> &mut Assert {
 
 fn must_contains(u: &mut Assert) -> &mut Assert {
     let mut v: Vec<String> = Vec::new();
-    let o = Option::Some("a".to_string());
+    let o = Some("a".to_string());
     v.push("value".to_string());
     v.push("h".to_string());
     u.vec_contains(v, "h".to_string())
@@ -63,6 +61,7 @@ fn must_superior(u: &mut Assert) -> &mut Assert {
 fn programs(u: &mut Assert) -> &mut Assert {
     u.program("/usr/bin/git").program("/usr/bin/curl")
 }
+
 fn no_programs(u: &mut Assert) -> &mut Assert {
     u.not_program("cmd")
 }
@@ -88,6 +87,9 @@ fn must_theory(u: &mut Assert) -> &mut Assert {
 }
 
 fn main() -> ExitCode {
+    Describe::it("Ok should be return true", true, &ok);
+    Describe::it("Ko should be return false", false, &ko);
+
     Assert::it(vec![
         &must_beetween,
         &programs,
