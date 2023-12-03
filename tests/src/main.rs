@@ -1,8 +1,11 @@
 use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
 use num::Float;
-use unit::unit::{traits::unit::{Testable, Theory}, Assert, Describe};
 use unit::unit::describe::unit::It;
+use unit::unit::{
+    traits::unit::{Testable, Theory},
+    Assert, Describe,
+};
 
 fn ok() -> bool {
     true
