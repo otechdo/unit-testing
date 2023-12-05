@@ -10,23 +10,7 @@
 * [Getting cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
 * [Rust guide](https://doc.rust-lang.org/cargo/guide/)
 
-![bencmark](badges/benchmark.svg)
-
-![build](badges/build.svg)
-
-![check](badges/check.svg)
-
-![clippy](badges/clippy.svg)
-
-![documentation](badges/documentation.svg)
-
-![format](badges/format.svg)
-
-![tests](badges/tests.svg)
-
-![tests](badges/tree.svg)
-
-![tests](badges/verify.svg)
+![bencmark](badges/benchmark.svg) ![build](badges/build.svg) ![check](badges/check.svg) ![clippy](badges/clippy.svg)  ![documentation](badges/documentation.svg)  ![format](badges/format.svg) ![tests](badges/tests.svg) ![tests](badges/tree.svg)  ![tests](badges/verify.svg)
 
 ![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-testing-take.gif)
 

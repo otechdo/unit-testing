@@ -3,6 +3,11 @@ pub mod unit {
     use std::{collections::HashSet, io, process::ExitCode};
 
     pub trait Take {
+        ///
+        /// # run assertion
+        ///
+        /// - `t` The test
+        ///
         fn assert_that(&mut self, t: bool) -> bool;
 
         ///
@@ -97,7 +102,7 @@ pub mod unit {
 
         ///
         /// # Check if a and b are equals
-        ///  
+        ///
         /// - `a`   The first value
         /// - `b`   The second value
         ///
@@ -105,7 +110,7 @@ pub mod unit {
 
         ///
         /// # Check if a and b are unequals
-        ///  
+        ///
         /// - `a`   The first value
         /// - `b`   The second value
         ///
@@ -113,7 +118,7 @@ pub mod unit {
 
         ///
         /// # Check if a are superior to min
-        ///  
+        ///
         /// - `a`   The first value
         /// - `min` The minimum value
         ///
@@ -121,7 +126,7 @@ pub mod unit {
 
         ///
         /// # Check if a are inferior to max
-        ///  
+        ///
         /// - `a`   The first value
         /// - `max` The maximum value
         ///
@@ -129,7 +134,7 @@ pub mod unit {
 
         ///
         /// # Check if a are between min and max
-        ///  
+        ///
         /// - `a`   The first value
         /// - `min` The minimum value
         /// - `max` The maximum value
@@ -210,7 +215,7 @@ pub mod unit {
         /// # Check if a path not exist
         ///
         /// - `p` The path to check the no existence
-        ///  
+        ///
         fn not_exists(&mut self, p: &str) -> &mut Self;
 
         ///
