@@ -70,7 +70,7 @@ pub mod unit {
                         i.elapsed().as_nanos().to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                        .as_str()
+                    .as_str()
                 );
             } else {
                 println!(
@@ -83,7 +83,7 @@ pub mod unit {
                         i.elapsed().as_nanos().to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                        .as_str()
+                    .as_str()
                 );
             }
         }
@@ -361,7 +361,7 @@ pub mod unit {
                             success_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Green,
                         Style::Bold,
                     );
@@ -377,7 +377,7 @@ pub mod unit {
                             failures_take.next().expect("").to_string().cyan().bold(),
                             "ns".blue().bold()
                         )
-                            .as_str(),
+                        .as_str(),
                         Color::Red,
                         Style::Bold,
                     );
@@ -394,7 +394,7 @@ pub mod unit {
                     "Failures :".blue().bold(),
                     self.f.get().to_string().red().bold(),
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -565,7 +565,7 @@ pub mod unit {
                         take.next().expect("").to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
-                        .as_str(),
+                    .as_str(),
                     Color::Green,
                     Style::Bold,
                 );
@@ -579,7 +579,7 @@ pub mod unit {
                     total.to_string().blue().bold(),
                     "assertions".blue().bold()
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
