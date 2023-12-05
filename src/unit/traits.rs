@@ -13,7 +13,7 @@ pub mod unit {
         ///
         /// # Run assert and measure execution time
         ///
-        fn take<'a>(&'a mut self, t: bool, s: &'a str, e: &'a str) -> &mut Self;
+        fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self;
     }
 
     pub trait Theory {
