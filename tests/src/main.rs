@@ -16,7 +16,10 @@ fn ko() -> bool {
 }
 
 fn must_pass(u: &mut Assert) -> &mut Assert {
-    u.ok(&ok).ko(&ko)
+    u.ok(&ok).ko(&ko).matches(
+        r"\b\w{13}\b",
+        vec!["I categorically deny having triskaidekaphobia".to_string()],
+    )
 }
 
 fn must_exists(u: &mut Assert) -> &mut Assert {

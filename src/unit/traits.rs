@@ -69,6 +69,8 @@ pub mod unit {
     }
 
     pub trait Testable {
+        fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Self;
+
         ///
         /// # Constructor
         ///

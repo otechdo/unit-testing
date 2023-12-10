@@ -1,16 +1,16 @@
 pub mod unit {
     use self::consts::unit::{
         ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
-        ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_NOT_CONTAINS, ASSERT_OK,
-        ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS, ASSERT_SHOULD_BE_EXECUTABLE,
+        ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_MATCH, ASSERT_NOT_CONTAINS,
+        ASSERT_OK, ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS, ASSERT_SHOULD_BE_EXECUTABLE,
         ASSERT_SHOULD_BE_INFERIOR, ASSERT_SHOULD_BE_KO, ASSERT_SHOULD_BE_NOT_CONTAINS,
         ASSERT_SHOULD_BE_NOT_EXECUTABLE, ASSERT_SHOULD_BE_OK, ASSERT_SHOULD_BE_SUPERIOR,
-        ASSERT_SHOULD_BE_UNEQUALS, ASSERT_SHOULD_CONTAINS, ASSERT_SOULD_BE_EXISTS, ASSERT_SUPERIOR,
-        ASSERT_THEORY_IS_FALSE, ASSERT_THEORY_IS_TRUE, ASSERT_THEORY_SHOULD_BE_FALSE,
-        ASSERT_THEORY_SHOULD_BE_TRUE, ASSERT_UNEQUALS, IS_BETWEEN, IS_CONTAINS, IS_EQUALS,
-        IS_EXECUTABLE, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_BETWEEN, IS_NOT_CONTAINS,
-        IS_NOT_EXECUTABLE, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE,
-        THEORY_IS_TRUE,
+        ASSERT_SHOULD_BE_UNEQUALS, ASSERT_SHOULD_CONTAINS, ASSERT_SOULD_BE_EXISTS,
+        ASSERT_SOULD_MATCH, ASSERT_SUPERIOR, ASSERT_THEORY_IS_FALSE, ASSERT_THEORY_IS_TRUE,
+        ASSERT_THEORY_SHOULD_BE_FALSE, ASSERT_THEORY_SHOULD_BE_TRUE, ASSERT_UNEQUALS, IS_BETWEEN,
+        IS_CONTAINS, IS_EQUALS, IS_EXECUTABLE, IS_EXISTS, IS_INFERIOR, IS_KO, IS_MATCH,
+        IS_NOT_BETWEEN, IS_NOT_CONTAINS, IS_NOT_EXECUTABLE, IS_NOT_EXISTS, IS_NOT_MATCH, IS_OK,
+        IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE, THEORY_IS_TRUE,
     };
     use crate::unit::consts::unit::{
         ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
@@ -25,6 +25,7 @@ pub mod unit {
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
     use progress_bar::*;
+    use regex::Regex;
     use std::cell::Cell;
     use std::collections::{HashMap, HashSet};
     use std::fs;
@@ -33,7 +34,6 @@ pub mod unit {
     use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
-
     pub mod consts;
     pub mod describe;
     pub mod enums;
@@ -217,6 +217,15 @@ pub mod unit {
     }
 
     impl Testable for Unit {
+        fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Unit {
+            let r = Regex::new(pattern).unwrap();
+
+            for x in values.iter() {
+                self.take(r.is_match(x.as_str()), IS_MATCH, IS_NOT_MATCH);
+            }
+            self
+        }
+
         fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode {
             let mut x = Self {
                 success: HashMap::new(),
@@ -422,6 +431,14 @@ pub mod unit {
     }
 
     impl Testable for Assert {
+        fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Assert {
+            let r = Regex::new(pattern).unwrap();
+
+            for x in values.iter() {
+                self.take(r.is_match(x.as_str()), ASSERT_MATCH, ASSERT_SOULD_MATCH);
+            }
+            self
+        }
         fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode {
             let mut x = Self {
                 messages: HashMap::new(),
