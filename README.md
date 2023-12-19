@@ -2,17 +2,19 @@
 
 > To run unit test for your rust applications
 
-* [Documentation](https://docs.rs/unit-testing/)
-* [Report a bugs](https://github.com/taishingi/zuu/issues)
-* [Source code](https://github.com/taishingi/zuu/tree/master/src/unit-testing)
-* [Donate](https://www.paypal.com/donate/?hosted_button_id=LTYH2BXQF57AA)
-* [Crate](https://crates.io/crates/unit-testing)
-* [Getting cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
-* [Rust guide](https://doc.rust-lang.org/cargo/guide/)
+[Documentation](https://docs.rs/unit-testing/)
+[Report a bugs](https://github.com/taishingi/zuu/issues)
+[Source code](https://github.com/taishingi/zuu/tree/master/src/unit-testing)
+[Donate](https://www.paypal.com/donate/?hosted_button_id=LTYH2BXQF57AA)
+[Crate](https://crates.io/crates/unit-testing)
+[Getting cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+[Rust guide](https://doc.rust-lang.org/cargo/guide/)
 
-![bencmark](badges/benchmark.svg) ![build](badges/build.svg) ![check](badges/check.svg) ![clippy](badges/clippy.svg)  ![documentation](badges/documentation.svg)  ![format](badges/format.svg) ![tests](badges/tests.svg) ![tests](badges/tree.svg)  ![tests](badges/verify.svg)
+## Unit output
 
 ![see-unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit-testing-take.gif)
+
+## Assertions output
 
 ![see-assert](https://raw.githubusercontent.com/taishingi/unit-testing/master/assert-testing-take.gif)
 
@@ -30,7 +32,7 @@ All tests in Assert use
 assert!(test);
 ```
 
-If you want to continue testing onf failures use [**Unit**](https://github.com/taishingi/unit-testing/blob/master/src/unit.rs#L40).
+If you want to continue testing onf failures use [Unit](https://github.com/taishingi/unit-testing/blob/master/src/unit.rs#L40).
 
 ```rust
 use std::process::ExitCode;
