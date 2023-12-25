@@ -1,13 +1,22 @@
-# Lib unit
+- [Unit output](#unit-output)
+- [Assertions output](#assertions-output)
+- [Installation](#installation)
+- [Assert](#assert)
+- [Recommended usage](#recommended-usage)
 
-> To run unit test for your rust applications
 
 [Documentation](https://docs.rs/unit-testing/)
+
 [Report a bugs](https://github.com/taishingi/zuu/issues)
+
 [Source code](https://github.com/taishingi/zuu/tree/master/src/unit-testing)
+
 [Donate](https://www.paypal.com/donate/?hosted_button_id=LTYH2BXQF57AA)
+
 [Crate](https://crates.io/crates/unit-testing)
+
 [Getting cargo](https://doc.rust-lang.org/cargo/getting-started/installation.html)
+
 [Rust guide](https://doc.rust-lang.org/cargo/guide/)
 
 ## Unit output
