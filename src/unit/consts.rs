@@ -1,4 +1,7 @@
 pub mod unit {
+
+    pub const ASSERT_MATCH: &str = "The value match the regex";
+    pub const ASSERT_SOULD_MATCH: &str = "The value sould be match the regex";
     pub const ASSERT_BEGIN: &str = "The value begin with the expected value";
     pub const ASSERT_FAIL: &str = "The callback has a failure exist status";
     pub const ASSERT_SUCCESS: &str = "The callback has a success exist status";
@@ -53,6 +56,8 @@ pub mod unit {
     pub const ASSERT_SOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
     pub const ASSERT_PROGRESS_TIME: u64 = 100;
 
+    pub const IS_MATCH: &str = "The value match the regex";
+    pub const IS_NOT_MATCH: &str = "The value not match the regex";
     pub const IS_FAIL: &str = "The callback has a failure exist status";
     pub const IS_SUCCESS: &str = "The callback has a success exist status";
     pub const IS_NOT_SUCCESS: &str = "The callback has not a success exist status";

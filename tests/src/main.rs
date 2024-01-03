@@ -1,10 +1,9 @@
 use std::{collections::HashSet, env::consts::OS, process::ExitCode};
 
 use num::Float;
-use unit::unit::describe::unit::It;
 use unit::unit::{
     traits::unit::{Testable, Theory},
-    Assert, Describe,
+    Assert,
 };
 
 fn ok() -> bool {
@@ -16,7 +15,18 @@ fn ko() -> bool {
 }
 
 fn must_pass(u: &mut Assert) -> &mut Assert {
-    u.ok(&ok).ko(&ko)
+    u.ok(&ok)
+        .ko(&ko)
+        .matches(
+            r"\b\w{13}\b",
+            vec!["I categorically deny having triskaidekaphobia".to_string()],
+        )
+        .capture(
+            r"'(?<title>[^']+)'\s+\((?<year>\d{4})\)",
+            "Not my favorite movie: 'Citizen Kane' (1941).",
+            0,
+            vec!["'Citizen Kane' (1941)".to_string()],
+        )
 }
 
 fn must_exists(u: &mut Assert) -> &mut Assert {
@@ -90,9 +100,6 @@ fn must_theory(u: &mut Assert) -> &mut Assert {
 }
 
 fn main() -> ExitCode {
-    Describe::it("Ok should be return true", true, &ok);
-    Describe::it("Ko should be return false", false, &ko);
-
     Assert::it(vec![
         &must_beetween,
         &programs,
