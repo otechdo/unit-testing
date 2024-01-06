@@ -1,0 +1,22 @@
+[package]
+name = "unit-testing"
+description = "A unit testing library"
+license-file = "LICENSE"
+version = "2.0.5"
+edition = "2021"
+repository = "https://github.com/taishingi/unit-testing"
+documentation = "https://docs.rs/unit-testing/"
+authors = ["Willy Micieli"]
+keywords = ["unit", "testing"]
+readme = "REAMDE.md"
+categories = ["development-tools"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+colored_truecolor = "0.1.0"
+is_executable = "1.0.1"
+num = "0.4.1"
+progress_bar = "1.0.5"
+regex = "1.10.2"
+test-env-helpers = "0.2.2"
