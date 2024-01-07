@@ -1,9 +1,17 @@
 pub mod unit {
-
+    ///
+    /// # mod to describe functions
+    ///  
     pub mod describe;
+    ///
+    /// # All trait available
+    ///
     pub mod object;
-    pub mod output;
 
+    ///
+    /// # The console output text
+    ///  
+    pub mod output;
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
     use progress_bar::{
@@ -21,9 +29,9 @@ pub mod unit {
     use std::thread::sleep;
     use std::time::{Duration, Instant};
 
-    use self::describe::unit::It;
-    use self::object::unit::{Failure, Success, Take, Testable, Theory};
-    use self::output::unit::{
+    use self::describe::It;
+    use self::object::{Failure, Success, Take, Testable, Theory};
+    use self::output::{
         ASSERT_BEGIN, ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_FAIL,
         ASSERT_FINNISH, ASSERT_INFERIOR, ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_KO,
         ASSERT_MATCH, ASSERT_NOT_CONTAINS, ASSERT_NOT_EXISTS, ASSERT_OK, ASSERT_PROGRESS_TIME,
@@ -41,13 +49,17 @@ pub mod unit {
         IS_NOT_MATCH, IS_NOT_SUCCESS, IS_OK, IS_SUCCESS, IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE,
         THEORY_IS_TRUE, UNIT_PROGRESS_TIME,
     };
-
+    ///
+    /// # To run assertions tests
+    ///
     pub struct Assert {
         c: Cell<usize>,
         messages: HashMap<usize, String>,
         take: HashMap<usize, u128>,
     }
-
+    ///
+    /// # To run units tests
+    ///
     pub struct Unit {
         s: Cell<usize>,
         f: Cell<usize>,
@@ -56,7 +68,9 @@ pub mod unit {
         success: HashMap<usize, String>,
         failure: HashMap<usize, String>,
     }
-
+    ///
+    /// # The tests suite
+    ///
     pub struct Describe {}
 
     impl It for Describe {
@@ -490,7 +504,7 @@ pub mod unit {
                 j = c(j);
             }
             assert!(j.end());
-            exit(0)
+            exit(0);
         }
 
         fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
