@@ -1,30 +1,24 @@
 pub mod unit {
-    use self::consts::unit::{
-        ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_INFERIOR,
-        ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_MATCH, ASSERT_NOT_CONTAINS,
-        ASSERT_OK, ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS, ASSERT_SHOULD_BE_EXECUTABLE,
-        ASSERT_SHOULD_BE_INFERIOR, ASSERT_SHOULD_BE_KO, ASSERT_SHOULD_BE_NOT_CONTAINS,
-        ASSERT_SHOULD_BE_NOT_EXECUTABLE, ASSERT_SHOULD_BE_OK, ASSERT_SHOULD_BE_SUPERIOR,
-        ASSERT_SHOULD_BE_UNEQUALS, ASSERT_SHOULD_CONTAINS, ASSERT_SOULD_BE_EXISTS,
-        ASSERT_SOULD_MATCH, ASSERT_SUPERIOR, ASSERT_THEORY_IS_FALSE, ASSERT_THEORY_IS_TRUE,
-        ASSERT_THEORY_SHOULD_BE_FALSE, ASSERT_THEORY_SHOULD_BE_TRUE, ASSERT_UNEQUALS, IS_BETWEEN,
-        IS_CONTAINS, IS_EQUALS, IS_EXECUTABLE, IS_EXISTS, IS_INFERIOR, IS_KO, IS_MATCH,
-        IS_NOT_BETWEEN, IS_NOT_CONTAINS, IS_NOT_EXECUTABLE, IS_NOT_EXISTS, IS_NOT_MATCH, IS_OK,
-        IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE, THEORY_IS_TRUE,
-    };
-    use crate::unit::consts::unit::{
-        ASSERT_BEGIN, ASSERT_FAIL, ASSERT_FINNISH, ASSERT_PROGRESS_TIME, ASSERT_SHOULD_BE_BEGIN,
-        ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_SUCCESS, ASSERT_SUCCESS,
-        IS_BEGIN, IS_FAIL, IS_FINNISH, IS_NOT_BEGIN, IS_NOT_FAIL, IS_NOT_FINNISH, IS_NOT_SUCCESS,
-        IS_SUCCESS, UNIT_PROGRESS_TIME,
-    };
+    ///
+    /// # mod to describe functions
+    ///  
+    pub mod describe;
+    ///
+    /// # All trait available
+    ///
+    pub mod object;
 
-    use self::traits::unit::{Take, Testable, Theory};
-    use crate::unit::describe::unit::It;
-    use crate::unit::traits::unit::{Failure, Success};
+    ///
+    /// # The console output text
+    ///  
+    pub mod output;
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
-    use progress_bar::*;
+    use progress_bar::{
+        finalize_progress_bar, inc_progress_bar, init_progress_bar_with_eta,
+        print_progress_bar_final_info, print_progress_bar_info, set_progress_bar_action, Color,
+        Style,
+    };
     use regex::Regex;
     use std::cell::Cell;
     use std::collections::{HashMap, HashSet};
@@ -34,17 +28,38 @@ pub mod unit {
     use std::process::{exit, ExitCode, ExitStatus};
     use std::thread::sleep;
     use std::time::{Duration, Instant};
-    pub mod consts;
-    pub mod describe;
-    pub mod enums;
-    pub mod traits;
 
+    use self::describe::It;
+    use self::object::{Failure, Success, Take, Testable, Theory};
+    use self::output::{
+        ASSERT_BEGIN, ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_FAIL,
+        ASSERT_FINNISH, ASSERT_INFERIOR, ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_KO,
+        ASSERT_MATCH, ASSERT_NOT_CONTAINS, ASSERT_NOT_EXISTS, ASSERT_OK, ASSERT_PROGRESS_TIME,
+        ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS,
+        ASSERT_SHOULD_BE_EXECUTABLE, ASSERT_SHOULD_BE_EXISTS, ASSERT_SHOULD_BE_FAIL,
+        ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_INFERIOR, ASSERT_SHOULD_BE_KO,
+        ASSERT_SHOULD_BE_NOT_CONTAINS, ASSERT_SHOULD_BE_NOT_EXECUTABLE,
+        ASSERT_SHOULD_BE_NOT_EXISTS, ASSERT_SHOULD_BE_OK, ASSERT_SHOULD_BE_SUCCESS,
+        ASSERT_SHOULD_BE_SUPERIOR, ASSERT_SHOULD_BE_UNEQUALS, ASSERT_SHOULD_CONTAINS,
+        ASSERT_SHOULD_MATCH, ASSERT_SUCCESS, ASSERT_SUPERIOR, ASSERT_THEORY_IS_FALSE,
+        ASSERT_THEORY_IS_TRUE, ASSERT_THEORY_SHOULD_BE_FALSE, ASSERT_THEORY_SHOULD_BE_TRUE,
+        ASSERT_UNEQUALS, IS_BEGIN, IS_BETWEEN, IS_CONTAINS, IS_EQUALS, IS_EXECUTABLE, IS_EXISTS,
+        IS_FAIL, IS_FINNISH, IS_INFERIOR, IS_KO, IS_MATCH, IS_NOT_BEGIN, IS_NOT_BETWEEN,
+        IS_NOT_CONTAINS, IS_NOT_EXECUTABLE, IS_NOT_EXISTS, IS_NOT_FAIL, IS_NOT_FINNISH,
+        IS_NOT_MATCH, IS_NOT_SUCCESS, IS_OK, IS_SUCCESS, IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE,
+        THEORY_IS_TRUE, UNIT_PROGRESS_TIME,
+    };
+    ///
+    /// # To run assertions tests
+    ///
     pub struct Assert {
         c: Cell<usize>,
         messages: HashMap<usize, String>,
         take: HashMap<usize, u128>,
     }
-
+    ///
+    /// # To run units tests
+    ///
     pub struct Unit {
         s: Cell<usize>,
         f: Cell<usize>,
@@ -53,7 +68,9 @@ pub mod unit {
         success: HashMap<usize, String>,
         failure: HashMap<usize, String>,
     }
-
+    ///
+    /// # The tests suite
+    ///
     pub struct Describe {}
 
     impl It for Describe {
@@ -91,14 +108,14 @@ pub mod unit {
 
     impl Success for Unit {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(c().unwrap().success(), IS_SUCCESS, IS_NOT_SUCCESS);
             }
             self
         }
 
         fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(c(), IS_SUCCESS, IS_FAIL);
             }
             self
@@ -107,7 +124,7 @@ pub mod unit {
 
     impl Success for Assert {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(
                     c().unwrap().success(),
                     ASSERT_SUCCESS,
@@ -118,7 +135,7 @@ pub mod unit {
         }
 
         fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(c(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
             }
             self
@@ -132,18 +149,16 @@ pub mod unit {
 
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
             let i = Instant::now();
-            match self.assert_that(t) {
-                true => {
-                    self.success.insert(self.s.get(), s.to_string());
-                    self.success_take
-                        .insert(self.s.get(), i.elapsed().as_nanos());
-                }
-                false => {
-                    self.failure.insert(self.f.get(), e.to_string());
-                    self.failure_take
-                        .insert(self.f.get(), i.elapsed().as_nanos());
-                }
-            };
+            if self.assert_that(t) {
+                self.success.insert(self.s.get(), s.to_string());
+                self.success_take
+                    .insert(self.s.get(), i.elapsed().as_nanos());
+            } else {
+                self.failure.insert(self.f.get(), e.to_string());
+                self.failure_take
+                    .insert(self.f.get(), i.elapsed().as_nanos());
+            }
+
             self
         }
     }
@@ -153,7 +168,7 @@ pub mod unit {
             &mut self,
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 c().expect_err("not error detected");
                 self.take(true, ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
             }
@@ -161,7 +176,7 @@ pub mod unit {
         }
 
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(!c(), ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
             }
             self
@@ -173,7 +188,7 @@ pub mod unit {
             &mut self,
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 c().expect_err("not error detected");
                 self.take(true, IS_FAIL, IS_NOT_FAIL);
             }
@@ -181,7 +196,7 @@ pub mod unit {
         }
 
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 self.take(!c(), IS_FAIL, IS_NOT_FAIL);
             }
             self
@@ -193,15 +208,15 @@ pub mod unit {
             self.assert(t)
         }
 
-        fn take(&mut self, t: bool, s: &str, _e: &str) -> &mut Self {
+        fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
             let i = Instant::now();
-            match self.assert_that(t) {
-                true => {
-                    self.messages.insert(self.c.get(), s.to_string());
-                    self.take.insert(self.c.get(), i.elapsed().as_nanos());
-                }
-                false => panic!("not possible"),
-            };
+
+            if self.assert_that(t) {
+                self.messages.insert(self.c.get(), s.to_string());
+                self.take.insert(self.c.get(), i.elapsed().as_nanos());
+            } else {
+                panic!("{}", format_args!("{s} match {e}"))
+            }
             self
         }
     }
@@ -216,11 +231,28 @@ pub mod unit {
         }
     }
 
+    impl Theory for Assert {
+        fn chaos(&mut self, callback: &dyn Fn() -> bool) -> &mut Self {
+            self.take(
+                !callback(),
+                ASSERT_THEORY_IS_FALSE,
+                ASSERT_THEORY_SHOULD_BE_FALSE,
+            )
+        }
+
+        fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self {
+            self.take(
+                expected == callback(),
+                ASSERT_THEORY_IS_TRUE,
+                ASSERT_THEORY_SHOULD_BE_TRUE,
+            )
+        }
+    }
     impl Testable for Unit {
         fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Self {
             let r = Regex::new(pattern).unwrap();
 
-            for x in values.iter() {
+            for x in &values {
                 self.take(r.is_match(x.as_str()), IS_MATCH, IS_NOT_MATCH);
             }
             self
@@ -235,7 +267,7 @@ pub mod unit {
         ) -> &mut Self {
             let r = Regex::new(pattern).unwrap();
             let caps = r.captures(x).unwrap();
-            for v in values.iter() {
+            for v in &values {
                 self.equals(
                     caps.get(key).expect("failed to get key").as_str(),
                     v.as_str(),
@@ -257,11 +289,11 @@ pub mod unit {
             };
 
             let mut j = &mut x;
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 j = c(j);
             }
 
-            j.end().expect("a");
+            let _ = j.end();
             if x.failure.capacity() > 0 {
                 exit(1)
             }
@@ -344,7 +376,7 @@ pub mod unit {
         fn file_contains(&mut self, f: &str, v: &str) -> &mut Self {
             self.take(
                 fs::read_to_string(f)
-                    .unwrap_or_else(|_| panic!("The filename {} has not been founded", f))
+                    .unwrap_or_else(|_| panic!("The filename {f} has not been founded"))
                     .contains(v),
                 IS_CONTAINS,
                 IS_NOT_CONTAINS,
@@ -367,7 +399,7 @@ pub mod unit {
             self.take(actual.ends_with(expected), IS_FINNISH, IS_NOT_FINNISH)
         }
 
-        fn end(&mut self) -> Result<&mut Self, String> {
+        fn end(&mut self) -> bool {
             let total: usize = self.f.get() + self.s.get();
             init_progress_bar_with_eta(total);
             set_progress_bar_action("[ :: ]", Color::Green, Style::Bold);
@@ -428,25 +460,7 @@ pub mod unit {
                 Style::Bold,
             );
             finalize_progress_bar();
-            Ok(self)
-        }
-    }
-
-    impl Theory for Assert {
-        fn chaos(&mut self, callback: &dyn Fn() -> bool) -> &mut Self {
-            self.take(
-                !callback(),
-                ASSERT_THEORY_IS_FALSE,
-                ASSERT_THEORY_SHOULD_BE_FALSE,
-            )
-        }
-
-        fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self {
-            self.take(
-                expected == callback(),
-                ASSERT_THEORY_IS_TRUE,
-                ASSERT_THEORY_SHOULD_BE_TRUE,
-            )
+            true
         }
     }
 
@@ -454,8 +468,8 @@ pub mod unit {
         fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Self {
             let r = Regex::new(pattern).unwrap();
 
-            for x in values.iter() {
-                self.take(r.is_match(x.as_str()), ASSERT_MATCH, ASSERT_SOULD_MATCH);
+            for x in &values {
+                self.take(r.is_match(x.as_str()), ASSERT_MATCH, ASSERT_SHOULD_MATCH);
             }
             self
         }
@@ -469,7 +483,7 @@ pub mod unit {
         ) -> &mut Self {
             let r = Regex::new(pattern).unwrap();
             let caps = r.captures(x).unwrap();
-            for v in values.iter() {
+            for v in &values {
                 self.equals(
                     caps.get(key).expect("failed to get key").as_str(),
                     v.as_str(),
@@ -486,11 +500,11 @@ pub mod unit {
                 take: HashMap::new(),
             };
             let mut j = &mut x;
-            for &c in callbacks.iter() {
+            for &c in &callbacks {
                 j = c(j);
             }
-            j.end().expect("failure");
-            exit(0)
+            assert!(j.end());
+            exit(0);
         }
 
         fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
@@ -498,7 +512,7 @@ pub mod unit {
         }
 
         fn ko(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
-            self.take(!f(), ASSERT_OK, ASSERT_SHOULD_BE_KO)
+            self.take(!f(), ASSERT_KO, ASSERT_SHOULD_BE_KO)
         }
 
         fn assert(&mut self, test: bool) -> bool {
@@ -569,7 +583,7 @@ pub mod unit {
         fn file_contains(&mut self, f: &str, v: &str) -> &mut Self {
             self.take(
                 fs::read_to_string(f)
-                    .unwrap_or_else(|_| panic!("The filename {} has not been founded", f))
+                    .unwrap_or_else(|_| panic!("The filename {f} has not been founded"))
                     .contains(v),
                 ASSERT_CONTAINS,
                 ASSERT_SHOULD_CONTAINS,
@@ -577,14 +591,18 @@ pub mod unit {
         }
 
         fn exists(&mut self, p: &str) -> &mut Self {
-            self.take(Path::new(p).exists(), ASSERT_EXISTS, ASSERT_SOULD_BE_EXISTS)
+            self.take(
+                Path::new(p).exists(),
+                ASSERT_EXISTS,
+                ASSERT_SHOULD_BE_EXISTS,
+            )
         }
 
         fn not_exists(&mut self, p: &str) -> &mut Self {
             self.take(
                 !Path::new(p).exists(),
-                ASSERT_EXISTS,
-                ASSERT_SOULD_BE_EXISTS,
+                ASSERT_NOT_EXISTS,
+                ASSERT_SHOULD_BE_NOT_EXISTS,
             )
         }
 
@@ -604,7 +622,7 @@ pub mod unit {
             )
         }
 
-        fn end(&mut self) -> Result<&mut Self, String> {
+        fn end(&mut self) -> bool {
             let total: usize = self.c.get();
             init_progress_bar_with_eta(total);
             set_progress_bar_action("[ ✓ ]", Color::Green, Style::Bold);
@@ -641,7 +659,7 @@ pub mod unit {
                 Style::Bold,
             );
             finalize_progress_bar();
-            Ok(self)
+            true
         }
     }
 }

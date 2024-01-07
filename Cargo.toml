@@ -1,31 +1,18 @@
-workspace = { members = ["tests"] }
 [package]
 name = "unit-testing"
-version = "2.0.5"
-edition = "2021"
 description = "A unit testing library"
 license-file = "LICENSE"
+version = "2.0.5"
+edition = "2021"
 repository = "https://github.com/taishingi/unit-testing"
 documentation = "https://docs.rs/unit-testing/"
 authors = ["Willy Micieli"]
-
-[lib]
-name = "unit"
-path = "src/unit.rs"
-crate-type = ["lib"]
-test = true          # Is tested by default.
-doctest = true       # Documentation examples are tested by default.
-bench = true         # Is benchmarked by default.
-doc = true           # Is documented by default.
-harness = true       # Use libtest harness.
-proc-macro = true
-
-[[bin]]
-name = "run-test"
-path = "src/tdd.rs"
-
+keywords = ["unit", "testing"]
+readme = "REAMDE.md"
+categories = ["development-tools"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [dependencies]
 colored_truecolor = "0.1.0"
 is_executable = "1.0.1"
