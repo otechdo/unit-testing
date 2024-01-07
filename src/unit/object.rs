@@ -20,6 +20,16 @@ pub trait Take {
     /// - `e` The error output message
     ///
     fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self;
+
+    ///
+    ///
+    /// # Run a assert and mesure the time
+    ///
+    /// - `t` The test
+    /// - `s` The success output message
+    /// - `e` The error output message
+    ///
+    fn check(&mut self, t: bool, s: &str, e: &str);
 }
 
 ///

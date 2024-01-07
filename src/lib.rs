@@ -49,6 +49,7 @@ pub mod unit {
         IS_NOT_MATCH, IS_NOT_SUCCESS, IS_OK, IS_SUCCESS, IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE,
         THEORY_IS_TRUE, UNIT_PROGRESS_TIME,
     };
+
     ///
     /// # To run assertions tests
     ///
@@ -109,14 +110,14 @@ pub mod unit {
     impl Success for Unit {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
             for &c in &callbacks {
-                self.take(c().unwrap().success(), IS_SUCCESS, IS_NOT_SUCCESS);
+                self.check(c().unwrap().success(), IS_SUCCESS, IS_NOT_SUCCESS);
             }
             self
         }
 
         fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
             for &c in &callbacks {
-                self.take(c(), IS_SUCCESS, IS_FAIL);
+                self.check(c(), IS_SUCCESS, IS_FAIL);
             }
             self
         }
@@ -125,7 +126,7 @@ pub mod unit {
     impl Success for Assert {
         fn run(&mut self, callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>) -> &mut Self {
             for &c in &callbacks {
-                self.take(
+                self.check(
                     c().unwrap().success(),
                     ASSERT_SUCCESS,
                     ASSERT_SHOULD_BE_SUCCESS,
@@ -136,7 +137,7 @@ pub mod unit {
 
         fn success(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
             for &c in &callbacks {
-                self.take(c(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
+                self.check(c(), ASSERT_SUCCESS, ASSERT_SHOULD_BE_SUCCESS);
             }
             self
         }
@@ -148,18 +149,39 @@ pub mod unit {
         }
 
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
-            let i = Instant::now();
+            let i: Instant = Instant::now();
             if self.assert_that(t) {
-                self.success.insert(self.s.get(), s.to_string());
-                self.success_take
-                    .insert(self.s.get(), i.elapsed().as_nanos());
+                assert!(self.success.insert(self.s.get(), s.to_string()).is_some());
+                assert!(self
+                    .success_take
+                    .insert(self.s.get(), i.elapsed().as_nanos())
+                    .is_some());
             } else {
-                self.failure.insert(self.f.get(), e.to_string());
-                self.failure_take
-                    .insert(self.f.get(), i.elapsed().as_nanos());
+                assert!(self.failure.insert(self.f.get(), e.to_string()).is_some());
+                assert!(self
+                    .failure_take
+                    .insert(self.f.get(), i.elapsed().as_nanos())
+                    .is_some());
             }
 
             self
+        }
+
+        fn check(&mut self, t: bool, s: &str, e: &str) {
+            let i: Instant = Instant::now();
+            if self.assert_that(t) {
+                assert!(self.success.insert(self.s.get(), s.to_string()).is_some());
+                assert!(self
+                    .success_take
+                    .insert(self.s.get(), i.elapsed().as_nanos())
+                    .is_some());
+            } else {
+                assert!(self.failure.insert(self.f.get(), e.to_string()).is_some());
+                assert!(self
+                    .failure_take
+                    .insert(self.f.get(), i.elapsed().as_nanos())
+                    .is_some());
+            }
         }
     }
 
@@ -169,15 +191,15 @@ pub mod unit {
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
             for &c in &callbacks {
-                c().expect_err("not error detected");
-                self.take(true, ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
+                let status = c().unwrap();
+                self.check(!status.success(), ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
             }
             self
         }
 
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
             for &c in &callbacks {
-                self.take(!c(), ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
+                self.check(!c(), ASSERT_FAIL, ASSERT_SHOULD_BE_FAIL);
             }
             self
         }
@@ -189,15 +211,15 @@ pub mod unit {
             callbacks: Vec<&dyn Fn() -> Result<ExitStatus, Error>>,
         ) -> &mut Self {
             for &c in &callbacks {
-                c().expect_err("not error detected");
-                self.take(true, IS_FAIL, IS_NOT_FAIL);
+                let status: ExitStatus = c().unwrap();
+                self.check(!status.success(), IS_FAIL, IS_NOT_FAIL);
             }
             self
         }
 
         fn fail(&mut self, callbacks: Vec<&dyn Fn() -> bool>) -> &mut Self {
             for &c in &callbacks {
-                self.take(!c(), IS_FAIL, IS_NOT_FAIL);
+                self.check(!c(), IS_FAIL, IS_NOT_FAIL);
             }
             self
         }
@@ -209,15 +231,32 @@ pub mod unit {
         }
 
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
-            let i = Instant::now();
+            let i: Instant = Instant::now();
 
             if self.assert_that(t) {
-                self.messages.insert(self.c.get(), s.to_string());
-                self.take.insert(self.c.get(), i.elapsed().as_nanos());
+                assert!(self.messages.insert(self.c.get(), s.to_string()).is_some());
+                assert!(self
+                    .take
+                    .insert(self.c.get(), i.elapsed().as_nanos())
+                    .is_some());
             } else {
                 panic!("{}", format_args!("{s} match {e}"))
             }
             self
+        }
+
+        fn check(&mut self, t: bool, s: &str, e: &str) {
+            let i: Instant = Instant::now();
+
+            if self.assert_that(t) {
+                assert!(self.messages.insert(self.c.get(), s.to_string()).is_some());
+                assert!(self
+                    .take
+                    .insert(self.c.get(), i.elapsed().as_nanos())
+                    .is_some());
+            } else {
+                panic!("{}", format_args!("{s} match {e}"))
+            }
         }
     }
 
@@ -253,7 +292,7 @@ pub mod unit {
             let r = Regex::new(pattern).unwrap();
 
             for x in &values {
-                self.take(r.is_match(x.as_str()), IS_MATCH, IS_NOT_MATCH);
+                self.check(r.is_match(x.as_str()), IS_MATCH, IS_NOT_MATCH);
             }
             self
         }
@@ -265,12 +304,16 @@ pub mod unit {
             key: usize,
             values: Vec<String>,
         ) -> &mut Self {
-            let r = Regex::new(pattern).unwrap();
+            let r: Regex = Regex::new(pattern).unwrap();
             let caps = r.captures(x).unwrap();
             for v in &values {
-                self.equals(
-                    caps.get(key).expect("failed to get key").as_str(),
-                    v.as_str(),
+                self.check(
+                    caps.get(key)
+                        .expect("failed to get key")
+                        .as_str()
+                        .eq(v.as_str()),
+                    IS_MATCH,
+                    IS_NOT_MATCH,
                 );
             }
             self
@@ -469,7 +512,7 @@ pub mod unit {
             let r = Regex::new(pattern).unwrap();
 
             for x in &values {
-                self.take(r.is_match(x.as_str()), ASSERT_MATCH, ASSERT_SHOULD_MATCH);
+                self.check(r.is_match(x.as_str()), ASSERT_MATCH, ASSERT_SHOULD_MATCH);
             }
             self
         }
@@ -484,9 +527,13 @@ pub mod unit {
             let r = Regex::new(pattern).unwrap();
             let caps = r.captures(x).unwrap();
             for v in &values {
-                self.equals(
-                    caps.get(key).expect("failed to get key").as_str(),
-                    v.as_str(),
+                self.check(
+                    caps.get(key)
+                        .expect("failed to get key")
+                        .as_str()
+                        .eq(v.as_str()),
+                    ASSERT_MATCH,
+                    ASSERT_SHOULD_MATCH,
                 );
             }
             self
