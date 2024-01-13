@@ -7,3 +7,4 @@ continuous/
 # Added by cargo
 
 /target
+.vscode/

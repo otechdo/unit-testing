@@ -52,7 +52,7 @@ pub const ASSERT_SHOULD_BE_NOT_CONTAINS: &str =
 pub const ASSERT_NOT_EMPTY: &str = "The value is not empty";
 pub const ASSERT_SHOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
 pub const ASSERT_PROGRESS_TIME: u64 = 100;
-
+pub const DISABLE_PROGRESS_TIME: u64 = 0;
 pub const IS_MATCH: &str = "The value match the regex";
 pub const IS_NOT_MATCH: &str = "The value no match the regex";
 pub const IS_FAIL: &str = "The callback has a failure exit status code";
