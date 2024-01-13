@@ -1,5 +1,5 @@
 use std::process::ExitStatus;
-use std::{collections::HashSet, io, process::ExitCode};
+use std::{collections::HashSet, io};
 
 ///
 /// # Calculate the time of the test function
@@ -98,6 +98,11 @@ pub trait Success {
 ///
 pub trait Testable {
     ///
+    /// - `sleep_time` The sleep time
+    ///
+    fn new(sleep_time: u64) -> Self;
+
+    ///
     /// # Check if a pattern matches values
     ///
     /// - `pattern` The pattern to match
@@ -117,10 +122,10 @@ pub trait Testable {
     ///
     /// # Constructor
     ///
-    /// - `callbacks` The vec list of callback
+    /// - `callbacks`   The vec list of callback
+    /// - `describe`    The description
     ///
-    ///
-    fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode;
+    fn it(describe: &str, sleep_time: u64, callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>);
 
     ///
     /// # Assert if callback return true

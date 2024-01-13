@@ -3,6 +3,12 @@ pub mod unit {
     /// # mod to describe functions
     ///  
     pub mod describe;
+
+    ///
+    /// # All macros
+    ///
+    pub mod mac;
+
     ///
     /// # All trait available
     ///
@@ -25,7 +31,7 @@ pub mod unit {
     use std::fs;
     use std::io::Error;
     use std::path::Path;
-    use std::process::{exit, ExitCode, ExitStatus};
+    use std::process::ExitStatus;
     use std::thread::sleep;
     use std::time::{Duration, Instant};
 
@@ -34,20 +40,19 @@ pub mod unit {
     use self::output::{
         ASSERT_BEGIN, ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_FAIL,
         ASSERT_FINNISH, ASSERT_INFERIOR, ASSERT_IS_EXECUTABLE, ASSERT_IS_NOT_EXECUTABLE, ASSERT_KO,
-        ASSERT_MATCH, ASSERT_NOT_CONTAINS, ASSERT_NOT_EXISTS, ASSERT_OK, ASSERT_PROGRESS_TIME,
-        ASSERT_SHOULD_BE_BEGIN, ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS,
-        ASSERT_SHOULD_BE_EXECUTABLE, ASSERT_SHOULD_BE_EXISTS, ASSERT_SHOULD_BE_FAIL,
-        ASSERT_SHOULD_BE_FINNISH, ASSERT_SHOULD_BE_INFERIOR, ASSERT_SHOULD_BE_KO,
-        ASSERT_SHOULD_BE_NOT_CONTAINS, ASSERT_SHOULD_BE_NOT_EXECUTABLE,
-        ASSERT_SHOULD_BE_NOT_EXISTS, ASSERT_SHOULD_BE_OK, ASSERT_SHOULD_BE_SUCCESS,
-        ASSERT_SHOULD_BE_SUPERIOR, ASSERT_SHOULD_BE_UNEQUALS, ASSERT_SHOULD_CONTAINS,
-        ASSERT_SHOULD_MATCH, ASSERT_SUCCESS, ASSERT_SUPERIOR, ASSERT_THEORY_IS_FALSE,
-        ASSERT_THEORY_IS_TRUE, ASSERT_THEORY_SHOULD_BE_FALSE, ASSERT_THEORY_SHOULD_BE_TRUE,
-        ASSERT_UNEQUALS, IS_BEGIN, IS_BETWEEN, IS_CONTAINS, IS_EQUALS, IS_EXECUTABLE, IS_EXISTS,
-        IS_FAIL, IS_FINNISH, IS_INFERIOR, IS_KO, IS_MATCH, IS_NOT_BEGIN, IS_NOT_BETWEEN,
-        IS_NOT_CONTAINS, IS_NOT_EXECUTABLE, IS_NOT_EXISTS, IS_NOT_FAIL, IS_NOT_FINNISH,
-        IS_NOT_MATCH, IS_NOT_SUCCESS, IS_OK, IS_SUCCESS, IS_SUPERIOR, IS_UNEQUALS, THEORY_IS_FALSE,
-        THEORY_IS_TRUE, UNIT_PROGRESS_TIME,
+        ASSERT_MATCH, ASSERT_NOT_CONTAINS, ASSERT_NOT_EXISTS, ASSERT_OK, ASSERT_SHOULD_BE_BEGIN,
+        ASSERT_SHOULD_BE_BETWEEN, ASSERT_SHOULD_BE_EQUALS, ASSERT_SHOULD_BE_EXECUTABLE,
+        ASSERT_SHOULD_BE_EXISTS, ASSERT_SHOULD_BE_FAIL, ASSERT_SHOULD_BE_FINNISH,
+        ASSERT_SHOULD_BE_INFERIOR, ASSERT_SHOULD_BE_KO, ASSERT_SHOULD_BE_NOT_CONTAINS,
+        ASSERT_SHOULD_BE_NOT_EXECUTABLE, ASSERT_SHOULD_BE_NOT_EXISTS, ASSERT_SHOULD_BE_OK,
+        ASSERT_SHOULD_BE_SUCCESS, ASSERT_SHOULD_BE_SUPERIOR, ASSERT_SHOULD_BE_UNEQUALS,
+        ASSERT_SHOULD_CONTAINS, ASSERT_SHOULD_MATCH, ASSERT_SUCCESS, ASSERT_SUPERIOR,
+        ASSERT_THEORY_IS_FALSE, ASSERT_THEORY_IS_TRUE, ASSERT_THEORY_SHOULD_BE_FALSE,
+        ASSERT_THEORY_SHOULD_BE_TRUE, ASSERT_UNEQUALS, IS_BEGIN, IS_BETWEEN, IS_CONTAINS,
+        IS_EQUALS, IS_EXECUTABLE, IS_EXISTS, IS_FAIL, IS_FINNISH, IS_INFERIOR, IS_KO, IS_MATCH,
+        IS_NOT_BEGIN, IS_NOT_BETWEEN, IS_NOT_CONTAINS, IS_NOT_EXECUTABLE, IS_NOT_EXISTS,
+        IS_NOT_FAIL, IS_NOT_FINNISH, IS_NOT_MATCH, IS_NOT_SUCCESS, IS_OK, IS_SUCCESS, IS_SUPERIOR,
+        IS_UNEQUALS, THEORY_IS_FALSE, THEORY_IS_TRUE,
     };
 
     ///
@@ -55,6 +60,7 @@ pub mod unit {
     ///
     pub struct Assert {
         c: Cell<usize>,
+        sleep: u64,
         messages: HashMap<usize, String>,
         take: HashMap<usize, u128>,
     }
@@ -64,6 +70,7 @@ pub mod unit {
     pub struct Unit {
         s: Cell<usize>,
         f: Cell<usize>,
+        sleep: u64,
         success_take: HashMap<usize, u128>,
         failure_take: HashMap<usize, u128>,
         success: HashMap<usize, String>,
@@ -151,17 +158,19 @@ pub mod unit {
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
             let i: Instant = Instant::now();
             if self.assert_that(t) {
-                assert!(self.success.insert(self.s.get(), s.to_string()).is_some());
-                assert!(self
-                    .success_take
-                    .insert(self.s.get(), i.elapsed().as_nanos())
-                    .is_some());
+                assert_eq!(self.success.insert(self.s.get(), s.to_string()), None);
+                assert_eq!(
+                    self.success_take
+                        .insert(self.s.get(), i.elapsed().as_nanos()),
+                    None
+                );
             } else {
-                assert!(self.failure.insert(self.f.get(), e.to_string()).is_some());
-                assert!(self
-                    .failure_take
-                    .insert(self.f.get(), i.elapsed().as_nanos())
-                    .is_some());
+                assert_eq!(self.failure.insert(self.f.get(), e.to_string()), None);
+                assert_eq!(
+                    self.failure_take
+                        .insert(self.f.get(), i.elapsed().as_nanos()),
+                    None
+                );
             }
 
             self
@@ -234,11 +243,8 @@ pub mod unit {
             let i: Instant = Instant::now();
 
             if self.assert_that(t) {
-                assert!(self.messages.insert(self.c.get(), s.to_string()).is_some());
-                assert!(self
-                    .take
-                    .insert(self.c.get(), i.elapsed().as_nanos())
-                    .is_some());
+                assert_eq!(self.messages.insert(self.c.get(), s.to_string()), None);
+                assert_eq!(self.take.insert(self.c.get(), i.elapsed().as_nanos()), None);
             } else {
                 panic!("{}", format_args!("{s} match {e}"))
             }
@@ -319,17 +325,12 @@ pub mod unit {
             self
         }
 
-        fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode {
-            println!();
-
-            let mut x = Self {
-                success: HashMap::new(),
-                failure: HashMap::new(),
-                s: Cell::new(0),
-                f: Cell::new(0),
-                success_take: HashMap::new(),
-                failure_take: HashMap::new(),
-            };
+        fn it(describe: &str, sleep_time: u64, callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) {
+            println!(
+                "      {}",
+                format_args!("{} {}", "[ OK ]".green().bold(), describe.blue().bold())
+            );
+            let mut x = Self::new(sleep_time);
 
             let mut j = &mut x;
             for &c in &callbacks {
@@ -337,10 +338,6 @@ pub mod unit {
             }
 
             let _ = j.end();
-            if x.failure.capacity() > 0 {
-                exit(1)
-            }
-            exit(0)
         }
 
         fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
@@ -453,7 +450,7 @@ pub mod unit {
             let mut failures_take = self.failure_take.values();
 
             for _i in 0..total {
-                sleep(Duration::from_millis(UNIT_PROGRESS_TIME));
+                sleep(Duration::from_millis(self.sleep));
 
                 if let Some(x) = success.next() {
                     print_progress_bar_info(
@@ -505,6 +502,18 @@ pub mod unit {
             finalize_progress_bar();
             true
         }
+
+        fn new(sleep_time: u64) -> Self {
+            Self {
+                s: Cell::new(0),
+                f: Cell::new(0),
+                sleep: sleep_time,
+                success_take: HashMap::new(),
+                failure_take: HashMap::new(),
+                success: HashMap::new(),
+                failure: HashMap::new(),
+            }
+        }
     }
 
     impl Testable for Assert {
@@ -539,19 +548,18 @@ pub mod unit {
             self
         }
 
-        fn it(callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) -> ExitCode {
-            println!();
-            let mut x = Self {
-                messages: HashMap::new(),
-                c: Cell::new(0),
-                take: HashMap::new(),
-            };
+        fn it(describe: &str, sleep_time: u64, callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>) {
+            println!(
+                "     {}",
+                format_args!("{} {}", "[ + ]".green().bold(), describe.blue().bold())
+            );
+            let mut x = Self::new(sleep_time);
+
             let mut j = &mut x;
             for &c in &callbacks {
                 j = c(j);
             }
             assert!(j.end());
-            exit(0);
         }
 
         fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self {
@@ -677,14 +685,14 @@ pub mod unit {
             let mut take = self.take.values();
             let mut messages = self.messages.values();
             for _i in 0..total {
-                sleep(Duration::from_millis(ASSERT_PROGRESS_TIME));
+                sleep(Duration::from_millis(self.sleep));
                 print_progress_bar_info(
                     "[ ✓ ]",
                     format!(
                         "{} {} {} {}",
-                        messages.next().expect("").blue().bold(),
+                        messages.next().unwrap().to_string().blue().bold(),
                         "take".white().bold(),
-                        take.next().expect("").to_string().cyan().bold(),
+                        take.next().unwrap().to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
                     .as_str(),
@@ -708,5 +716,220 @@ pub mod unit {
             finalize_progress_bar();
             true
         }
+
+        fn new(sleep_time: u64) -> Self {
+            Self {
+                c: Cell::new(0),
+                sleep: sleep_time,
+                messages: HashMap::new(),
+                take: HashMap::new(),
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use crate::{
+        assert_that, check_that,
+        unit::{
+            object::{Testable, Theory},
+            output::DISABLE_PROGRESS_TIME,
+            Assert, Unit,
+        },
+    };
+    use std::{collections::HashSet, env::consts::OS};
+
+    fn ok() -> bool {
+        true
+    }
+
+    fn ko() -> bool {
+        false
+    }
+
+    fn must_pass(u: &mut Assert) -> &mut Assert {
+        u.ok(&ok).ko(&ko)
+    }
+
+    fn must_exists(u: &mut Assert) -> &mut Assert {
+        u.exists(".").exists("README.md").exists("/").exists("/lib")
+    }
+
+    fn must_linux(u: &mut Assert) -> &mut Assert {
+        u.not_exists("C:\\Users")
+            .not_exists("C:\\ProgramData")
+            .not_exists("C:\\WINDOWS\\symtem32")
+    }
+
+    fn must_equals(u: &mut Assert) -> &mut Assert {
+        u.equals("README.md", "README.md")
+            .equals(4, 4)
+            .equals(4.4, 4.4)
+            .equals(true, true)
+            .equals(false, false)
+    }
+
+    fn must_contains(u: &mut Assert) -> &mut Assert {
+        let mut v: Vec<String> = Vec::new();
+        let o = Option::Some("a".to_string());
+        v.push("value".to_string());
+        v.push("h".to_string());
+        u.vec_contains(v, "h".to_string())
+            .option_contains(o, "a".to_string())
+            .string_contains(OS, "linux")
+            .file_contains("README.md", "Installation")
+            .hash_contains(&mut HashSet::from(["a".to_string()]), "a".to_string())
+    }
+
+    fn must_unequals(u: &mut Assert) -> &mut Assert {
+        u.unequals("README.md", ".")
+            .unequals(4, 6)
+            .unequals(5.6, 4.4)
+            .unequals(false, true)
+            .unequals(false, true)
+    }
+
+    fn must_superior(u: &mut Assert) -> &mut Assert {
+        u.superior(1, 0).superior(5, 2)
+    }
+
+    fn programs(u: &mut Assert) -> &mut Assert {
+        u.program("/usr/bin/git").program("/usr/bin/curl")
+    }
+
+    fn no_programs(u: &mut Assert) -> &mut Assert {
+        u.not_program("cmd")
+    }
+
+    fn must_inferior(u: &mut Assert) -> &mut Assert {
+        u.inferior(10, 50).inferior(50, 200)
+    }
+
+    fn must_beetween(u: &mut Assert) -> &mut Assert {
+        u.between(10, 5, 50).between(50, 10, 200)
+    }
+
+    fn pythagore() -> f32 {
+        3.0_f32.hypot(4.0)
+    }
+
+    fn pythagore_not_work() -> bool {
+        4.0_f32.hypot(4.0) == 5.0
+    }
+
+    fn must_theory(u: &mut Assert) -> &mut Assert {
+        u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
+    }
+
+    fn check_pass(u: &mut Unit) -> &mut Unit {
+        u.ok(&ok).ko(&ko)
+    }
+
+    fn check_exists(u: &mut Unit) -> &mut Unit {
+        u.exists(".").exists("README.md").exists("/").exists("/lib")
+    }
+
+    fn check_linux(u: &mut Unit) -> &mut Unit {
+        u.not_exists("C:\\Users")
+            .not_exists("C:\\ProgramData")
+            .not_exists("C:\\WINDOWS\\symtem32")
+    }
+
+    fn check_equals(u: &mut Unit) -> &mut Unit {
+        u.equals("README.md", "README.md")
+            .equals(4, 4)
+            .equals(4.4, 4.4)
+            .equals(true, true)
+            .equals(false, false)
+    }
+
+    fn check_contains(u: &mut Unit) -> &mut Unit {
+        let mut v: Vec<String> = Vec::new();
+        let o = Option::Some("a".to_string());
+        v.push("value".to_string());
+        v.push("h".to_string());
+        u.vec_contains(v, "h".to_string())
+            .option_contains(o, "a".to_string())
+            .string_contains(OS, "linux")
+            .file_contains("README.md", "Installation")
+            .hash_contains(&mut HashSet::from(["a".to_string()]), "a".to_string())
+    }
+
+    fn check_unequals(u: &mut Unit) -> &mut Unit {
+        u.unequals("README.md", ".")
+            .unequals(4, 6)
+            .unequals(5.6, 4.4)
+            .unequals(false, true)
+            .unequals(false, true)
+    }
+
+    fn check_superior(u: &mut Unit) -> &mut Unit {
+        u.superior(1, 0).superior(5, 2)
+    }
+
+    fn check_programs(u: &mut Unit) -> &mut Unit {
+        u.program("/usr/bin/git").program("/usr/bin/curl")
+    }
+
+    fn check_no_programs(u: &mut Unit) -> &mut Unit {
+        u.not_program("cmd")
+    }
+
+    fn check_inferior(u: &mut Unit) -> &mut Unit {
+        u.inferior(10, 50).inferior(50, 200)
+    }
+
+    fn check_beetween(u: &mut Unit) -> &mut Unit {
+        u.between(10, 5, 50).between(50, 10, 200)
+    }
+
+    fn check_theory(u: &mut Unit) -> &mut Unit {
+        u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
+    }
+
+    #[test]
+    pub fn assert_that() {
+        assert_that!(
+            "Test the assert framework",
+            DISABLE_PROGRESS_TIME,
+            vec![
+                &must_beetween,
+                &programs,
+                &must_theory,
+                &no_programs,
+                &must_unequals,
+                &must_linux,
+                &must_equals,
+                &must_exists,
+                &must_pass,
+                &must_contains,
+                &must_superior,
+                &must_inferior,
+            ]
+        );
+    }
+
+    #[test]
+    pub fn check_that() {
+        check_that!(
+            "Test the unit framework",
+            DISABLE_PROGRESS_TIME,
+            vec![
+                &check_beetween,
+                &check_programs,
+                &check_no_programs,
+                &check_unequals,
+                &check_linux,
+                &check_equals,
+                &check_exists,
+                &check_pass,
+                &check_contains,
+                &check_superior,
+                &check_inferior,
+                &check_theory
+            ]
+        );
     }
 }
