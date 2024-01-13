@@ -2,7 +2,7 @@
 name = "unit-testing"
 description = "A unit testing library"
 license-file = "LICENSE"
-version = "2.1.0"
+version = "2.1.1"
 edition = "2021"
 repository = "https://github.com/taishingi/unit-testing"
 documentation = "https://docs.rs/unit-testing/"
