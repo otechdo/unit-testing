@@ -27,23 +27,13 @@ macro_rules! check_that {
 }
 
 ///
-/// # Get an instance of Unit
+/// # Check with a personnal message  
 ///
-/// - `describe`    The description
-/// - `type`        The Apply type
-/// - `time`        The sleep time
-/// - `callbacks`   The callback to execute
+/// - `description` The global description
 ///
 #[macro_export]
-macro_rules! apply_for {
-    ($describe:expr,$type:ty,$time:expr,callbacks:expr) => {
-        match $type {
-            Apply::ASSERT => {
-                assert_that!($describe, $time, $callbacks)
-            }
-            Apply::UNIT => {
-                check_that!($describe, $time, $callbacks)
-            }
-        }
+macro_rules! describe {
+    ($description:expr) => {
+        $crate::unit::Describe::new($description)
     };
 }

@@ -1,12 +1,5 @@
 pub mod unit {
-    ///
-    /// # mod to describe functions
-    ///  
-    pub mod describe;
-    ///
-    /// # All enums
-    ///
-    pub mod mum;
+
     ///
     /// # All macros
     ///
@@ -40,7 +33,6 @@ pub mod unit {
     use std::thread::sleep;
     use std::time::{Duration, Instant};
 
-    use self::describe::It;
     use self::object::{Failure, Success, Take, Testable, Theory};
     use self::output::{
         ASSERT_BEGIN, ASSERT_BETWEEN, ASSERT_CONTAINS, ASSERT_EQUALS, ASSERT_EXISTS, ASSERT_FAIL,
@@ -82,40 +74,90 @@ pub mod unit {
         failure: HashMap<usize, String>,
     }
     ///
-    /// # The tests suite
+    /// # The describe suite
     ///
-    pub struct Describe {}
+    pub struct Describe {
+        assertion: Cell<usize>,
+        failures: Cell<usize>,
+    }
 
-    impl It for Describe {
-        fn it<T: PartialEq>(description: &str, expected: T, callback: &dyn Fn() -> T) {
+    impl Describe {
+        ///
+        /// # The constructor
+        ///
+        /// `description` The global descripion
+        ///
+        #[must_use]
+        pub fn new(description: &str) -> Self {
+            println!(
+                "     {}",
+                format!("{} {}", "[ ✓ ]".green().bold(), description.blue().bold(),).as_str()
+            );
+            Self {
+                assertion: Cell::new(0),
+                failures: Cell::new(0),
+            }
+        }
+
+        ///
+        /// # Check if callback result match the expected value
+        ///
+        /// - `s`         The success message  
+        /// - `e`         The error message  
+        /// - `expected`  The callback expected result  
+        /// - `callback`  The callback to check
+        ///
+        pub fn it<T: PartialEq>(
+            &mut self,
+            s: &str,
+            e: &str,
+            expected: &T,
+            callback: &dyn Fn() -> T,
+        ) -> &mut Self {
             let i: Instant = Instant::now();
-            if callback().eq(&expected) {
+            if callback().eq(expected) {
                 println!(
                     "     {}",
                     format!(
                         "{} {} {} {} {}",
                         "[ ✓ ]".green().bold(),
-                        description.blue().bold(),
+                        s.blue().bold(),
                         "take".white().bold(),
                         i.elapsed().as_nanos().to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
                     .as_str()
                 );
+                self.assertion.set(self.assertion.get() + 1);
             } else {
                 println!(
                     "     {}",
                     format!(
                         "{} {} {} {} {}",
                         "[ ⨯ ]".red().bold(),
-                        description.purple().bold(),
+                        e.purple().bold(),
                         "take".white().bold(),
                         i.elapsed().as_nanos().to_string().cyan().bold(),
                         "ns".blue().bold()
                     )
                     .as_str()
                 );
+                self.failures.set(self.failures.get() + 1);
             }
+            self
+        }
+
+        pub fn end(&mut self) {
+            println!(
+                "     {}",
+                format!(
+                    "{} Assertion : {} Failures : {}",
+                    "[ ✓ ]".green().bold(),
+                    self.assertion.get().to_string().green().bold(),
+                    self.failures.get().to_string().red().bold()
+                )
+                .as_str()
+            );
         }
     }
 
@@ -737,7 +779,7 @@ pub mod unit {
 mod tests {
 
     use crate::{
-        assert_that, check_that,
+        assert_that, check_that, describe,
         unit::{
             object::{Testable, Theory},
             output::DISABLE_PROGRESS_TIME,
@@ -752,6 +794,10 @@ mod tests {
 
     fn ko() -> bool {
         false
+    }
+
+    fn py() -> bool {
+        4 * 4 + 3 * 3 == 25
     }
 
     fn must_pass(u: &mut Assert) -> &mut Assert {
@@ -913,6 +959,24 @@ mod tests {
                 &must_inferior,
             ]
         );
+    }
+
+    #[test]
+    pub fn check_it() {
+        describe!("Check if the triangle is rectangle")
+            .it(
+                "The triangle is rectangle",
+                "The triangle is not rectangle",
+                &true,
+                &py,
+            )
+            .it(
+                "The triangle is not rectangle",
+                "The triangle is rectangle",
+                &false,
+                &pythagore_not_work,
+            )
+            .end();
     }
 
     #[test]
