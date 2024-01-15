@@ -8,9 +8,10 @@ pub trait Take {
     ///
     /// # run assertion
     ///
-    /// - `t` The test
+    /// - `t`   The test
+    /// - `e`   The error message
     ///
-    fn assert_that(&mut self, t: bool) -> bool;
+    fn assert_that(&mut self, t: bool, e: &str) -> bool;
 
     ///
     /// # Run assert and measure execution time
@@ -146,9 +147,10 @@ pub trait Testable {
     /// # Check if test pass
     ///
     /// - `test` The test assertion
+    /// - `e`    The error message
     ///
     ///
-    fn assert(&mut self, test: bool) -> bool;
+    fn assert(&mut self, test: bool, e: &str) -> bool;
 
     ///
     /// # Check if a and b are equals

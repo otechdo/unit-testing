@@ -3,10 +3,14 @@ pub mod unit {
     /// # mod to describe functions
     ///  
     pub mod describe;
-
+    ///
+    /// # All enums
+    ///
+    pub mod mum;
     ///
     /// # All macros
     ///
+    #[macro_use]
     pub mod mac;
 
     ///
@@ -18,6 +22,7 @@ pub mod unit {
     /// # The console output text
     ///  
     pub mod output;
+
     use colored_truecolor::Colorize;
     use is_executable::IsExecutable;
     use progress_bar::{
@@ -151,13 +156,13 @@ pub mod unit {
     }
 
     impl Take for Unit {
-        fn assert_that(&mut self, t: bool) -> bool {
-            self.assert(t)
+        fn assert_that(&mut self, t: bool, e: &str) -> bool {
+            self.assert(t, e)
         }
 
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
             let i: Instant = Instant::now();
-            if self.assert_that(t) {
+            if self.assert_that(t, e) {
                 assert_eq!(self.success.insert(self.s.get(), s.to_string()), None);
                 assert_eq!(
                     self.success_take
@@ -178,7 +183,7 @@ pub mod unit {
 
         fn check(&mut self, t: bool, s: &str, e: &str) {
             let i: Instant = Instant::now();
-            if self.assert_that(t) {
+            if self.assert_that(t, e) {
                 assert!(self.success.insert(self.s.get(), s.to_string()).is_some());
                 assert!(self
                     .success_take
@@ -235,14 +240,14 @@ pub mod unit {
     }
 
     impl Take for Assert {
-        fn assert_that(&mut self, t: bool) -> bool {
-            self.assert(t)
+        fn assert_that(&mut self, t: bool, e: &str) -> bool {
+            self.assert(t, e)
         }
 
         fn take(&mut self, t: bool, s: &str, e: &str) -> &mut Self {
             let i: Instant = Instant::now();
 
-            if self.assert_that(t) {
+            if self.assert_that(t, e) {
                 assert_eq!(self.messages.insert(self.c.get(), s.to_string()), None);
                 assert_eq!(self.take.insert(self.c.get(), i.elapsed().as_nanos()), None);
             } else {
@@ -254,7 +259,7 @@ pub mod unit {
         fn check(&mut self, t: bool, s: &str, e: &str) {
             let i: Instant = Instant::now();
 
-            if self.assert_that(t) {
+            if self.assert_that(t, e) {
                 assert!(self.messages.insert(self.c.get(), s.to_string()).is_some());
                 assert!(self
                     .take
@@ -348,7 +353,7 @@ pub mod unit {
             self.take(!f(), IS_KO, IS_OK)
         }
 
-        fn assert(&mut self, test: bool) -> bool {
+        fn assert(&mut self, test: bool, _e: &str) -> bool {
             if test {
                 self.s.set(self.s.get() + 1);
             } else {
@@ -570,8 +575,8 @@ pub mod unit {
             self.take(!f(), ASSERT_KO, ASSERT_SHOULD_BE_KO)
         }
 
-        fn assert(&mut self, test: bool) -> bool {
-            assert!(test);
+        fn assert(&mut self, test: bool, e: &str) -> bool {
+            assert!(test, "{e}");
             self.c.set(self.c.get() + 1);
             true
         }
@@ -765,10 +770,9 @@ mod tests {
 
     fn must_equals(u: &mut Assert) -> &mut Assert {
         u.equals("README.md", "README.md")
-            .equals(4, 4)
-            .equals(4.4, 4.4)
-            .equals(true, true)
-            .equals(false, false)
+            .equals(5.0, pythagore())
+            .equals(true, ok())
+            .equals(false, ko())
     }
 
     fn must_contains(u: &mut Assert) -> &mut Assert {
