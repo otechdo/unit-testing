@@ -1,0 +1,24 @@
+name: build
+on:
+  push:
+    branches: [ "master" , "develop" , "main" ]
+  pull_request:
+    branches: [ "master" ,"develop", "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+jobs:
+  example_matrix:
+    strategy:
+      matrix:
+        version: [10, 12, 14]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+          node-version: ${{ matrix.version }}
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests
+      run: cargo test --verbose
