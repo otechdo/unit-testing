@@ -739,7 +739,7 @@ mod tests {
             Assert, Unit,
         },
     };
-    use std::{collections::HashSet, env::consts::OS};
+    use std::collections::HashSet;
 
     fn ok() -> bool {
         true
@@ -794,7 +794,7 @@ mod tests {
     }
 
     fn programs(u: &mut Assert) -> &mut Assert {
-       u
+        u
     }
 
     fn no_programs(u: &mut Assert) -> &mut Assert {
@@ -830,7 +830,7 @@ mod tests {
     }
 
     fn check_linux(u: &mut Unit) -> &mut Unit {
-       u
+        u
     }
 
     fn check_equals(u: &mut Unit) -> &mut Unit {
@@ -865,9 +865,11 @@ mod tests {
         u.superior(1, 0).superior(5, 2)
     }
 
-
     fn check_no_programs(u: &mut Unit) -> &mut Unit {
-       u
+        u
+    }
+    fn check_programs(u: &mut Unit) -> &mut Unit {
+        u
     }
 
     fn check_inferior(u: &mut Unit) -> &mut Unit {
