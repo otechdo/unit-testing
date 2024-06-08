@@ -2,9 +2,5 @@ target/
 Cargo.lock
 continuous/
 .idea/
-
-
-# Added by cargo
-
 /target
 .vscode/
