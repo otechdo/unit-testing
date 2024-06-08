@@ -1,3 +1,5 @@
+#![allow(clippy::multiple_crate_versions)]
+
 pub mod unit {
     ///
     /// # mod to describe functions
