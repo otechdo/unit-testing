@@ -17,6 +17,11 @@ pub mod unit {
     pub mod object;
 
     ///
+    /// # All trait
+    ///
+    pub mod check;
+
+    ///
     /// # The console output text
     ///  
     pub mod output;
