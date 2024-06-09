@@ -44,6 +44,14 @@ pub trait Theory {
     fn chaos(&mut self, callback: &dyn Fn() -> bool) -> &mut Self;
 
     ///
+    /// # Check if a theorem is true
+    ///
+    /// - `expected`    The expected value    
+    /// - `actual`      The actual value
+    ///
+    fn theorem<T: PartialEq>(&mut self, expected: T, actual: &dyn Fn() -> T) -> &mut Self;
+
+    ///
     /// # Test a theory
     ///
     /// - `expected`    The expect callback result

@@ -276,6 +276,10 @@ pub mod unit {
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self {
             self.take(callback() == expected, THEORY_IS_TRUE, THEORY_IS_FALSE)
         }
+
+        fn theorem<T: PartialEq>(&mut self, expected: T, actual: &dyn Fn() -> T) -> &mut Self {
+            self.take(expected.eq(&actual()), THEORY_IS_TRUE, THEORY_IS_FALSE)
+        }
     }
 
     impl Theory for Assert {
@@ -286,7 +290,9 @@ pub mod unit {
                 ASSERT_THEORY_SHOULD_BE_FALSE,
             )
         }
-
+        fn theorem<T: PartialEq>(&mut self, expected: T, actual: &dyn Fn() -> T) -> &mut Self {
+            self.take(expected.eq(&actual()), THEORY_IS_TRUE, THEORY_IS_FALSE)
+        }
         fn theory<T: PartialEq>(&mut self, expected: T, callback: &dyn Fn() -> T) -> &mut Self {
             self.take(
                 expected == callback(),
