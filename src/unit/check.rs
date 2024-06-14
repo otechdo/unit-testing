@@ -1,5 +1,9 @@
+
 use crate::unit::output::{IS_EQUALS, IS_INFERIOR, IS_SUPERIOR, IS_UNEQUALS};
 
+///
+/// # To check with failures
+///
 pub struct Check {}
 
 impl Check {
@@ -50,7 +54,7 @@ impl Check {
     }
 
     ///
-    /// # Check if a are greater than b
+    /// # Check if a is greater than b
     ///
     /// - `a`   The first value
     /// - `b`   The second value
@@ -75,7 +79,7 @@ impl Check {
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    ///  # Examples
+    /// # Examples
     ///
     /// ```
     /// use unit_testing::unit::check::Check;
@@ -128,8 +132,12 @@ impl Check {
     }
 }
 
+///
+/// # To check without failures
+///
 pub struct Assertion {}
 impl Assertion {
+
     ///
     /// # Check if a and b are equals
     ///
@@ -138,19 +146,43 @@ impl Assertion {
     ///
     /// # Panics
     ///
+    /// If a not equal to b
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use unit_testing::unit::check::Assertion;
+    ///
+    /// Assertion::eq(&1,&1);
+    /// Assertion::eq(&true,&true);
+    /// Assertion::eq(&false,&false);
+    /// Assertion::eq(&3.14,&3.14);
+    /// ```
+    ///
     pub fn eq<T: PartialEq>(a: &T, b: &T) {
         assert!(a.eq(b), "{IS_UNEQUALS}");
     }
+
     ///
     /// # Check if a and b are unequals
     ///
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    /// # Panics
+    /// # Panic
     ///
     /// if a is not unequal to b
     ///
+    /// # Examples
+    ///
+    /// ```
+    /// use unit_testing::unit::check::Assertion;
+    ///
+    /// Assertion::ne(&1,&10);
+    /// Assertion::ne(&true,&false);
+    /// Assertion::ne(&false,&true);
+    /// Assertion::ne(&3.14,&1.62);
+    /// ```
     pub fn ne<T: PartialEq>(a: &T, b: &T) {
         assert!(a.ne(b), "{IS_EQUALS}");
     }
@@ -160,10 +192,20 @@ impl Assertion {
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    /// # Panics
+    /// # Panics
     ///
     /// if a is not greater than b
     ///
+    /// # Examples
+    ///
+    /// ```
+    /// use unit_testing::unit::check::Assertion;
+    ///
+    /// Assertion::ge(&1,&1);
+    /// Assertion::ge(&true,&true);
+    /// Assertion::ge(&false,&false);
+    /// Assertion::ge(&3.14,&3.14);
+    /// ```
     pub fn ge<T: PartialOrd>(a: &T, b: &T) {
         assert!(a.ge(b), "{IS_INFERIOR}");
     }
@@ -174,10 +216,19 @@ impl Assertion {
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    /// # Panics
+    /// # Panics
     ///
     /// if a is not greater than b
     ///
+    /// # Example
+    ///
+    /// ```
+    /// use unit_testing::unit::check::Assertion;
+    ///
+    /// Assertion::gt(&10,&1);
+    /// Assertion::gt(&true,&false);
+    /// Assertion::gt(&3.14,&1.62);
+    /// ```
     pub fn gt<T: PartialOrd>(a: &T, b: &T) {
         assert!(a.gt(b), "{IS_INFERIOR}");
     }
@@ -187,10 +238,24 @@ impl Assertion {
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    /// # Panics
+    /// # Panics
     ///
     /// if a is not lower than b
     ///
+    /// # Example
+    ///
+    /// ```
+    /// use unit_testing::unit::check::Assertion;
+    ///
+    /// Assertion::le(&3,&10);
+    /// Assertion::le(&false,&false);
+    /// Assertion::le(&false,&true);
+    /// Assertion::le(&true,&true);
+    /// Assertion::le(&3,&3);
+    /// Assertion::le(&3,&5);
+    /// Assertion::le(&3.0,&3.14);
+    /// Assertion::le(&3.14,&4.0);
+    /// ```
     pub fn le<T: PartialOrd>(a: &T, b: &T) {
         assert!(a.le(b), "{IS_SUPERIOR}");
     }
@@ -200,7 +265,7 @@ impl Assertion {
     /// - `a`   The first value
     /// - `b`   The second value
     ///
-    /// # Panics
+    /// # Panics
     ///
     /// if a is not lower than b
     ///
@@ -208,7 +273,12 @@ impl Assertion {
     ///
     /// ```
     /// use unit_testing::unit::check::Assertion;
-    /// Assertion::lt(&1, &40);
+    /// Assertion::lt(&3,&10);
+    /// Assertion::lt(&3,&5);
+    /// Assertion::lt(&3,&5);
+    /// Assertion::lt(&false,&true);
+    /// Assertion::lt(&3.0,&3.14);
+    /// Assertion::lt(&3.14,&4.0);
     /// ```
     ///
     pub fn lt<T: PartialOrd>(a: &T, b: &T) {
