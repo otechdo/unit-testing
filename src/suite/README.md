@@ -3,8 +3,8 @@
 ```rust
 #[cfg(test)]
 mod test {
-    use crate::suite::describe;
     use std::fs;
+    use unit_testing::suite::describe;
 
     #[test]
     fn suite() -> std::io::Result<()> {
@@ -52,3 +52,5 @@ mod test {
     }
 }
 ```
+
+![Suite](https://raw.githubusercontent.com/taishingi/unit-testing/master/suite.gif)

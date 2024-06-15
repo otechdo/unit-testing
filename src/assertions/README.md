@@ -3,11 +3,11 @@
 ````rust
 #[cfg(test)]
 mod test {
-    use crate::assert_that;
-    use crate::assertions::Assert;
-    use crate::objects::{Testable, Theory};
-    use crate::output::DISABLE_PROGRESS_TIME;
     use std::collections::HashSet;
+    use unit_testing::assert_that;
+    use unit_testing::assertions::Assert;
+    use unit_testing::objects::{Testable, Theory};
+    use unit_testing::output::ASSERT_PROGRESS_TIME;
 
     fn ok() -> bool {
         true
@@ -89,12 +89,13 @@ mod test {
         u.theory(5.0, &pythagore).chaos(&pythagore_not_work)
     }
 
+
     #[test]
     pub fn all() {
         assert_that!(
             "Test the assert framework",
             "Check if all values passes on success, can't be have failures.",
-            DISABLE_PROGRESS_TIME,
+            ASSERT_PROGRESS_TIME,
             vec![
                 &must_between,
                 &programs,
@@ -112,6 +113,8 @@ mod test {
         );
     }
 }
-
-
 ````
+
+## Output
+
+![Assertion](https://raw.githubusercontent.com/taishingi/unit-testing/master/assert.gif)

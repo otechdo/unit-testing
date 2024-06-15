@@ -113,3 +113,7 @@ mod test {
     }
 }
 ```
+
+## Output
+
+![Unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)

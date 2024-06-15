@@ -51,7 +51,7 @@ pub const ASSERT_SHOULD_BE_NOT_CONTAINS: &str =
     "The value has been founded in data and should be not";
 pub const ASSERT_NOT_EMPTY: &str = "The value is not empty";
 pub const ASSERT_SHOULD_BE_NOT_EMPTY: &str = "The value is empty and should be not";
-pub const ASSERT_PROGRESS_TIME: u64 = 100;
+pub const ASSERT_PROGRESS_TIME: u64 = 20;
 pub const DISABLE_PROGRESS_TIME: u64 = 0;
 pub const IS_MATCH: &str = "The value match the regex";
 pub const IS_NOT_MATCH: &str = "The value no match the regex";
@@ -81,4 +81,4 @@ pub const IS_NOT_EXECUTABLE: &str = "The file is not an executable";
 pub const THEORY_IS_TRUE: &str = "The theory is true";
 pub const THEORY_IS_FALSE: &str = "The theory if false";
 pub const IS_NOT_EXISTS: &str = "The path not exists";
-pub const UNIT_PROGRESS_TIME: u64 = 100;
+pub const UNIT_PROGRESS_TIME: u64 = 20;

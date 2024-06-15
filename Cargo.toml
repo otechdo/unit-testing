@@ -2,12 +2,12 @@
 name = "unit-testing"
 description = "A unit testing library"
 license-file = "LICENSE"
-version = "2.1.2"
+version = "3.0.0"
 edition = "2021"
 repository = "https://github.com/otechdo/unit-testing"
 documentation = "https://docs.rs/unit-testing/"
 authors = ["Willy Micieli"]
-keywords = ["unit", "testing"]
+keywords = ["unit", "testing", "framework"]
 readme = "README.md"
 categories = ["development-tools"]
 

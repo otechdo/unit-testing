@@ -5,13 +5,9 @@ use std::process::ExitStatus;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 use std::{fs, io};
-
 use colored_truecolor::Colorize;
 use is_executable::IsExecutable;
-use progress_bar::{
-    finalize_progress_bar, inc_progress_bar, init_progress_bar_with_eta,
-    print_progress_bar_final_info, print_progress_bar_info, set_progress_bar_action, Color, Style,
-};
+use progress_bar::{finalize_progress_bar, inc_progress_bar, print_progress_bar_final_info, print_progress_bar_info, set_progress_bar_action, Color, Style, init_progress_bar};
 use regex::Regex;
 
 use crate::objects::{Failure, Success, Take, Testable, Theory};
@@ -291,7 +287,7 @@ impl Testable for Assert {
 
     fn end(&mut self) -> bool {
         let total: usize = self.c.get();
-        init_progress_bar_with_eta(total);
+        init_progress_bar(total);
         set_progress_bar_action("[ ✓ ]", Color::Green, Style::Bold);
 
         let mut take = self.take.values();

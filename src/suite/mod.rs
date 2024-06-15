@@ -5,6 +5,8 @@ use crate::output::{
 use colored_truecolor::Colorize;
 use std::io;
 use std::path::Path;
+use std::thread::sleep;
+use std::time::Duration;
 
 ///
 /// # Represent a test suite
@@ -47,6 +49,7 @@ impl Suite {
             format_args!("{} {}", "✓".green().bold(), s.cyan().bold())
         );
         (self.after_each)();
+        sleep(Duration::from_millis(200));
         self
     }
 
@@ -158,7 +161,7 @@ impl Suite {
     /// - `expected` The expected value
     ///
     pub fn group(self, description: &str, callback: fn(Suite) -> Suite) -> Self {
-        println!("\n{}\n", description.blue().bold());
+        println!("\n{}\n", description.white().bold());
         callback(self)
     }
 }
@@ -183,7 +186,7 @@ pub fn describe(
     main: fn(Suite) -> Suite,
 ) -> Suite {
     before_all_hook();
-    println!("\n{}\n", title.magenta().bold());
+    println!("\n{}\n", title.white().bold());
     println!("\n{}\n", description.white().bold());
     let data: Suite = main(Suite::new(before_each_hook, after_each_hook));
     after_all_hook();
