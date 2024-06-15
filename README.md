@@ -23,4 +23,5 @@ cargo add unit-testing
         * [Source code](https://github.com/otechdo/unit-testing/blob/master/src/suite/mod.rs)
         * [Example](https://github.com/otechdo/unit-testing/blob/master/src/suite/README.md)
         * [Output](https://github.com/otechdo/unit-testing/blob/master/src/suite/suite.gif)
-    
+
+![donate](https://github.com/otechdo/unit-testing/blob/master/donate.png)
