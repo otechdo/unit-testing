@@ -49,7 +49,7 @@ impl Suite {
             format_args!("{} {}", "✓".green().bold(), s.cyan().bold())
         );
         (self.after_each)();
-        sleep(Duration::from_millis(200));
+        sleep(Duration::from_millis(50));
         self
     }
 
