@@ -21,7 +21,10 @@ pub mod unit {
     ///
     pub mod check;
 
-    pub mod helpers;
+    ///
+    /// # Contains suite test
+    ///
+    pub mod suite;
 
     ///
     /// # The console output text
