@@ -1,6 +1,6 @@
 use std::io;
 use colored_truecolor::Colorize;
-use crate::unit::output::{IS_EQUALS, IS_INFERIOR, IS_SUPERIOR, IS_UNEQUALS};
+use crate::unit::output::{IS_CONTAINS, IS_EQUALS, IS_INFERIOR, IS_NOT_CONTAINS, IS_SUPERIOR, IS_UNEQUALS};
 
 
 ///
@@ -96,6 +96,29 @@ impl Suite {
     {
         self.run(actual.ge(&expected), IS_SUPERIOR, IS_INFERIOR)
     }
+
+    ///
+    /// # Check if actual is containing expected
+    ///
+    /// - `actual`      The actual value
+    /// - `expected`    The expected value
+    ///
+    pub fn str_contains(self, actual: String, expected: &str) -> Self
+    {
+        self.run(actual.contains(expected), IS_CONTAINS, IS_NOT_CONTAINS)
+    }
+
+    ///
+    /// # Check if actual is not containing expected
+    ///
+    /// - `actual`      The actual value
+    /// - `expected`    The expected value
+    ///
+    pub fn str_not_contains(self, actual: String, expected: &str) -> Self
+    {
+        self.run(!actual.contains(expected), IS_NOT_CONTAINS, IS_CONTAINS)
+    }
+
     ///
     /// # Check if actual is lower or equal than expected
     ///
@@ -156,7 +179,8 @@ pub fn describe(description: &str, after_all_hook: fn(),
 #[cfg(test)]
 mod test
 {
-    use crate::unit::helpers::describe;
+    use std::fs;
+    use crate::unit::suite::describe;
 
 
     #[test]
@@ -171,9 +195,15 @@ mod test
             {}, || {},
             |s|
             {
-                s.group("should be equals", |s| {
-                    s.eq(1, 1).eq(2, 2)
-                }).group("should be unequal", |s| {
+                s.group("should be contains", |s| {
+                    s.str_contains(fs::read_to_string("README.md").expect("Failed to parse README.md"), "cargo add unit-testing")
+                })
+                    .group("should be not contains", |s| {
+                        s.str_not_contains(fs::read_to_string("README.md").expect("Failed to parse README.md"), "cargo add continuous-testing")
+                    })
+                    .group("should be equals", |s| {
+                        s.eq(1, 1).eq(2, 2)
+                    }).group("should be unequal", |s| {
                     s.ne(1, 2).ne(3, 2)
                 })
             },
