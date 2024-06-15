@@ -23,7 +23,7 @@ pub trait Take {
 
     ///
     ///
-    /// # Run a assert and mesure the time
+    /// # Run a assert and measure the time
     ///
     /// - `t` The test
     /// - `s` The success output message
@@ -44,7 +44,7 @@ pub trait Theory {
     fn chaos(&mut self, callback: &dyn Fn() -> bool) -> &mut Self;
 
     ///
-    /// # Check if a theorem is true
+    /// # Check if a theorem is true
     ///
     /// - `expected`    The expected value    
     /// - `actual`      The actual value
@@ -154,7 +154,6 @@ pub trait Testable {
     /// # Check if test pass
     ///
     /// - `test` The test assertion
-    ///
     ///
     fn assert(&mut self, test: bool) -> bool;
 
