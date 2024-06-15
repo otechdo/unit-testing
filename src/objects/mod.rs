@@ -23,7 +23,7 @@ pub trait Take {
 
     ///
     ///
-    /// # Run a assert and measure the time
+    /// # Run an assert and measure the time
     ///
     /// - `t` The test
     /// - `s` The success output message
@@ -46,7 +46,7 @@ pub trait Theory {
     ///
     /// # Check if a theorem is true
     ///
-    /// - `expected`    The expected value    
+    /// - `expected`    The expected value
     /// - `actual`      The actual value
     ///
     fn theorem<T: PartialEq>(&mut self, expected: T, actual: &dyn Fn() -> T) -> &mut Self;
@@ -114,41 +114,32 @@ pub trait Testable {
     /// # Check if a pattern matches values
     ///
     /// - `pattern` The pattern to match
-    /// - `values`  The values to check
+    /// - `values` The values to check
     ///
     fn matches(&mut self, pattern: &str, values: Vec<String>) -> &mut Self;
 
     ///
-    /// # check if a pattern a the x index equal a value listing in values
+    /// # check if a pattern the x index equals a value listing in values
     ///
     /// - `pattern` The pattern to match
     /// - `x` The index to match
-    /// - `values`  The values
+    /// - `values` The values
     ///
     fn capture(&mut self, pattern: &str, x: &str, key: usize, values: Vec<String>) -> &mut Self;
-
-    ///
-    /// # Constructor
-    ///
-    /// - `callbacks`   The vec list of callback
-    /// - `describe`    The description
-    ///
-    fn it(describe: &str, sleep_time: u64, callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>);
 
     ///
     /// # Assert if callback return true
     ///
     /// - `f` The callback
     ///
-    fn ok(&mut self, f: &dyn Fn() -> bool) -> &mut Self;
+    fn ok(&mut self, f: bool) -> &mut Self;
 
     ///
     /// # Assert if callback return false
     ///
     /// - `f` The callback
     ///
-    ///
-    fn ko(&mut self, f: &dyn Fn() -> bool) -> &mut Self;
+    fn ko(&mut self, f: bool) -> &mut Self;
 
     ///
     /// # Check if test pass
@@ -160,39 +151,48 @@ pub trait Testable {
     ///
     /// # Check if a and b are equals
     ///
-    /// - `a`   The first value
-    /// - `b`   The second value
+    /// - `a` The first value
+    /// - `b` The second value
     ///
-    fn equals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self;
+    fn eq<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self;
 
     ///
     /// # Check if a and b are unequals
     ///
-    /// - `a`   The first value
-    /// - `b`   The second value
+    /// - `a` The first value
+    /// - `b` The second value
     ///
-    fn unequals<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self;
+    fn ne<T: PartialEq>(&mut self, a: T, b: T) -> &mut Self;
 
     ///
-    /// # Check if a are superior to min
+    /// # Check if a is superior to min
     ///
-    /// - `a`   The first value
+    /// - `a` The first value
     /// - `min` The minimum value
     ///
-    fn superior<T: PartialOrd>(&mut self, a: T, min: T) -> &mut Self;
+    fn gt<T: PartialOrd>(&mut self, a: T, min: T) -> &mut Self;
+    ///
+    /// # Check if a is superior or equal to min
+    ///
+    /// - `a` The first value
+    /// - `min` The minimum value
+    ///
+    fn ge<T: PartialOrd>(&mut self, a: T, min: T) -> &mut Self;
 
     ///
-    /// # Check if a are inferior to max
+    /// # Check if a is inferior to max
     ///
-    /// - `a`   The first value
+    /// - `a` The first value
     /// - `max` The maximum value
     ///
-    fn inferior<T: PartialOrd>(&mut self, a: T, max: T) -> &mut Self;
+    fn lt<T: PartialOrd>(&mut self, a: T, max: T) -> &mut Self;
+
+    fn le<T: PartialOrd>(&mut self, a: T, max: T) -> &mut Self;
 
     ///
-    /// # Check if a are between min and max
+    /// # Check if a is between min and max
     ///
-    /// - `a`   The first value
+    /// - `a` The first value
     /// - `min` The minimum value
     /// - `max` The maximum value
     ///
@@ -211,15 +211,7 @@ pub trait Testable {
     ///
     /// - `p` The program path
     ///
-    fn program(&mut self, p: &str) -> &mut Self;
-
-    ///
-    /// # Check if p is not a program
-    ///
-    /// - `p` The program to test
-    ///
-    ///
-    fn not_program(&mut self, p: &str) -> &mut Self;
+    fn exe(&mut self, p: &str) -> &mut Self;
 
     ///
     /// # Check if a vector not contains a value
@@ -230,7 +222,7 @@ pub trait Testable {
     fn vec_no_contains<T: PartialEq>(&mut self, a: Vec<T>, b: T) -> &mut Self;
 
     ///
-    /// # Check if a option contains a value
+    /// # Check if an option contains a value
     ///
     /// - `a` The vector
     /// - `b` The value to check
@@ -251,7 +243,7 @@ pub trait Testable {
     /// - `a` The string
     /// - `b` The substring
     ///
-    fn string_contains(&mut self, a: &str, b: &str) -> &mut Self;
+    fn str_contains(&mut self, a: &str, b: &str) -> &mut Self;
 
     ///
     /// # Check if a file contains a value
@@ -262,32 +254,32 @@ pub trait Testable {
     fn file_contains(&mut self, f: &str, v: &str) -> &mut Self;
 
     ///
-    /// # Check if a paths exists
+    /// # Check if a path exists
     ///
     /// - `p` The path to test
     ///
     fn exists(&mut self, p: &str) -> &mut Self;
 
     ///
-    /// # Check if a path not exist
+    /// # Check if a path not exists
     ///
     /// - `p` The path to check the no existence
     ///
     fn not_exists(&mut self, p: &str) -> &mut Self;
 
     ///
-    /// # Check if a string begin with the expected value
+    /// # Check if a string begins with the expected value
     ///
-    /// - `actual`   The actual value
+    /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    fn begin_with(&mut self, actual: &str, expected: &str) -> &mut Self;
+    fn start_with(&mut self, actual: &str, expected: &str) -> &mut Self;
 
     ///
     ///  # Check if a string finnish with the expected value
     ///
-    /// - `actual`      The actual value
-    /// - `expected`    The expected value
+    /// - `actual` The actual value
+    /// - `expected` The expected value
     ///
     fn end_with(&mut self, actual: &str, expected: &str) -> &mut Self;
 
@@ -295,4 +287,10 @@ pub trait Testable {
     /// # Show assertions
     ///
     fn end(&mut self) -> bool;
+    fn it(
+        title: &str,
+        description: &str,
+        sleep_time: u64,
+        callbacks: Vec<&dyn Fn(&mut Self) -> &mut Self>,
+    );
 }
