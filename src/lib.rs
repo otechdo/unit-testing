@@ -21,6 +21,8 @@ pub mod unit {
     ///
     pub mod check;
 
+    pub mod helpers;
+
     ///
     /// # The console output text
     ///  
