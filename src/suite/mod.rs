@@ -202,7 +202,8 @@ mod test {
             "Suite test accept no test failure, for guaranty the source code.",
             || {},
             || {},
-            || {},
+            ||
+            {},
             || {},
             |s| {
                 s.group("Should be contains", |s| {
@@ -211,23 +212,23 @@ mod test {
                         "cargo add unit-testing",
                     )
                 })
-                .group("Check path", |s| {
-                    s.path_exists("README.md", true)
-                        .path_exists(".", true)
-                        .path_exists("alexandrie", false)
-                        .exists(".")
-                        .exists("README.md")
-                })
-                .group("Should be not contains", |s| {
-                    s.str_not_contains(
-                        fs::read_to_string("README.md").expect("Failed to parse README.md"),
-                        "cargo add continuous-testing",
-                    )
-                })
-                .group("Should be equals", |s| s.eq(1, 1).eq(2, 2))
-                .group("Should be unequal", |s| s.ne(1, 2).ne(3, 2))
+                    .group("Check path", |s| {
+                        s.path_exists("README.md", true)
+                            .path_exists(".", true)
+                            .path_exists("alexandrie", false)
+                            .exists(".")
+                            .exists("README.md")
+                    })
+                    .group("Should be not contains", |s| {
+                        s.str_not_contains(
+                            fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                            "cargo add continuous-testing",
+                        )
+                    })
+                    .group("Should be equals", |s| s.eq(1, 1).eq(2, 2))
+                    .group("Should be unequal", |s| s.ne(1, 2).ne(3, 2))
             },
         )
-        .end()
+            .end()
     }
 }
