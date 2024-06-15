@@ -1,4 +1,3 @@
-
 use crate::unit::output::{IS_EQUALS, IS_INFERIOR, IS_SUPERIOR, IS_UNEQUALS};
 
 ///
@@ -137,7 +136,6 @@ impl Check {
 ///
 pub struct Assertion {}
 impl Assertion {
-
     ///
     /// # Check if a and b are equals
     ///
@@ -300,7 +298,7 @@ mod test {
         Assertion::lt(&11, &2);
         Assertion::le(&11, &2);
     }
-    
+
     #[test]
     fn test_assert_continue() {
         Assertion::eq(&1, &1);

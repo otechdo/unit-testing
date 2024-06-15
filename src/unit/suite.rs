@@ -1,13 +1,15 @@
-use std::io;
+use crate::unit::output::{
+    IS_CONTAINS, IS_EQUALS, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK,
+    IS_SUPERIOR, IS_UNEQUALS,
+};
 use colored_truecolor::Colorize;
-use crate::unit::output::{IS_CONTAINS, IS_EQUALS, IS_INFERIOR, IS_NOT_CONTAINS, IS_SUPERIOR, IS_UNEQUALS};
-
+use std::io;
+use std::path::Path;
 
 ///
 /// # Represent a test suite
 ///
-pub struct Suite
-{
+pub struct Suite {
     before_each: fn(),
     after_each: fn(),
 }
@@ -19,8 +21,7 @@ impl Suite {
     /// - `before_each` The callback to execute before each test
     /// - `after_each`  The callback to execute after each test
     ///
-    pub fn new(before_each: fn(), after_each: fn()) -> Self
-    {
+    pub fn new(before_each: fn(), after_each: fn()) -> Self {
         Self {
             before_each,
             after_each,
@@ -43,7 +44,7 @@ impl Suite {
         assert!(x, "{}", e);
         println!(
             "      {}",
-            format_args!("{} {}", "✓".green().bold(), s.blue().bold())
+            format_args!("{} {}", "✓".green().bold(), s.cyan().bold())
         );
         (self.after_each)();
         self
@@ -52,8 +53,7 @@ impl Suite {
     ///
     /// # End of the test suite
     ///
-    pub fn end(&mut self) -> io::Result<()>
-    {
+    pub fn end(&mut self) -> io::Result<()> {
         Ok(())
     }
     ///
@@ -62,8 +62,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn eq<X: PartialEq>(self, actual: X, expected: X) -> Self
-    {
+    pub fn eq<X: PartialEq>(self, actual: X, expected: X) -> Self {
         self.run(actual.eq(&expected), IS_EQUALS, IS_UNEQUALS)
     }
     ///
@@ -72,8 +71,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn ne<X: PartialEq>(self, actual: X, expected: X) -> Self
-    {
+    pub fn ne<X: PartialEq>(self, actual: X, expected: X) -> Self {
         self.run(actual.ne(&expected), IS_UNEQUALS, IS_EQUALS)
     }
     ///
@@ -82,8 +80,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn gt<X: PartialOrd>(self, actual: X, expected: X) -> Self
-    {
+    pub fn gt<X: PartialOrd>(self, actual: X, expected: X) -> Self {
         self.run(actual.gt(&expected), IS_SUPERIOR, IS_INFERIOR)
     }
     ///
@@ -92,8 +89,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn ge<X: PartialOrd>(self, actual: X, expected: X) -> Self
-    {
+    pub fn ge<X: PartialOrd>(self, actual: X, expected: X) -> Self {
         self.run(actual.ge(&expected), IS_SUPERIOR, IS_INFERIOR)
     }
 
@@ -103,9 +99,27 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn str_contains(self, actual: String, expected: &str) -> Self
-    {
+    pub fn str_contains(self, actual: String, expected: &str) -> Self {
         self.run(actual.contains(expected), IS_CONTAINS, IS_NOT_CONTAINS)
+    }
+
+    ///
+    /// # Check if actual path match the expected value
+    ///
+    /// - `actual`      The actual value
+    /// - `expected`    The expected value
+    ///
+    pub fn path_exists(self, actual: &str, expected: bool) -> Self {
+        self.run(Path::new(actual).exists().eq(&expected), IS_OK, IS_KO)
+    }
+
+    ///
+    /// # Check if actual path exist
+    ///
+    /// - `actual`      The actual path
+    ///
+    pub fn exists(self, actual: &str) -> Self {
+        self.run(Path::new(actual).exists(), IS_EXISTS, IS_NOT_EXISTS)
     }
 
     ///
@@ -114,8 +128,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn str_not_contains(self, actual: String, expected: &str) -> Self
-    {
+    pub fn str_not_contains(self, actual: String, expected: &str) -> Self {
         self.run(!actual.contains(expected), IS_NOT_CONTAINS, IS_CONTAINS)
     }
 
@@ -125,8 +138,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn le<X: PartialOrd>(self, actual: X, expected: X) -> Self
-    {
+    pub fn le<X: PartialOrd>(self, actual: X, expected: X) -> Self {
         self.run(actual.le(&expected), IS_INFERIOR, IS_SUPERIOR)
     }
     ///
@@ -135,8 +147,7 @@ impl Suite {
     /// - `actual`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn lt<X: PartialOrd>(self, actual: X, expected: X) -> Self
-    {
+    pub fn lt<X: PartialOrd>(self, actual: X, expected: X) -> Self {
         self.run(actual.lt(&expected), IS_INFERIOR, IS_SUPERIOR)
     }
 
@@ -146,9 +157,8 @@ impl Suite {
     /// - `description`      The actual value
     /// - `expected`    The expected value
     ///
-    pub fn group(self, description: &str, callback: fn(Suite) -> Suite) -> Self
-    {
-        println!("\n{}\n", description.cyan().bold());
+    pub fn group(self, description: &str, callback: fn(Suite) -> Suite) -> Self {
+        println!("\n{}\n", description.blue().bold());
         callback(self)
     }
 }
@@ -163,50 +173,61 @@ impl Suite {
 /// - `before_each_hook`    A callback
 /// - `main`                The main callback
 ///
-pub fn describe(description: &str, after_all_hook: fn(),
-                after_each_hook: fn(),
-                before_all_hook: fn(),
-                before_each_hook: fn(),
-                main: fn(Suite) -> Suite) -> Suite
-{
+pub fn describe(
+    title: &str,
+    description: &str,
+    after_all_hook: fn(),
+    after_each_hook: fn(),
+    before_all_hook: fn(),
+    before_each_hook: fn(),
+    main: fn(Suite) -> Suite,
+) -> Suite {
     before_all_hook();
-    println!("\n{}\n", description.cyan().bold());
+    println!("\n{}\n", title.magenta().bold());
+    println!("\n{}\n", description.white().bold());
     let data: Suite = main(Suite::new(before_each_hook, after_each_hook));
     after_all_hook();
     data
 }
 
 #[cfg(test)]
-mod test
-{
-    use std::fs;
+mod test {
     use crate::unit::suite::describe;
-
+    use std::fs;
 
     #[test]
-    fn suite() -> std::io::Result<()>
-    {
+    fn suite() -> std::io::Result<()> {
         describe(
-            "Suite test case",
+            "Check the describe it test case",
+            "Suite test accept no test failure, for guaranty the source code.",
             || {},
-            ||
-            {},
-            ||
-            {}, || {},
-            |s|
-            {
-                s.group("should be contains", |s| {
-                    s.str_contains(fs::read_to_string("README.md").expect("Failed to parse README.md"), "cargo add unit-testing")
+            || {},
+            || {},
+            || {},
+            |s| {
+                s.group("Should be contains", |s| {
+                    s.str_contains(
+                        fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                        "cargo add unit-testing",
+                    )
                 })
-                    .group("should be not contains", |s| {
-                        s.str_not_contains(fs::read_to_string("README.md").expect("Failed to parse README.md"), "cargo add continuous-testing")
+                    .group("Check path", |s| {
+                        s.path_exists("README.md", true)
+                            .path_exists(".", true)
+                            .path_exists("alexandrie", false)
+                            .exists(".")
+                            .exists("README.md")
                     })
-                    .group("should be equals", |s| {
-                        s.eq(1, 1).eq(2, 2)
-                    }).group("should be unequal", |s| {
-                    s.ne(1, 2).ne(3, 2)
-                })
+                    .group("Should be not contains", |s| {
+                        s.str_not_contains(
+                            fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                            "cargo add continuous-testing",
+                        )
+                    })
+                    .group("Should be equals", |s| s.eq(1, 1).eq(2, 2))
+                    .group("Should be unequal", |s| s.ne(1, 2).ne(3, 2))
             },
-        ).end()
+        )
+            .end()
     }
 }
