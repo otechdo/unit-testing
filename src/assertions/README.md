@@ -117,4 +117,4 @@ mod test {
 
 ## Output
 
-![Assertion](https://raw.githubusercontent.com/taishingi/unit-testing/master/assert.gif)
+![Assertion](https://raw.githubusercontent.com/otechdo/unit-testing/master/src/assertions/assert.gif)

@@ -53,4 +53,4 @@ mod test {
 }
 ```
 
-![Suite](https://raw.githubusercontent.com/taishingi/unit-testing/master/suite.gif)
+![Suite](https://raw.githubusercontent.com/otechdo/unit-testing/master/src/suite/suite.gif)

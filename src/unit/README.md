@@ -116,4 +116,4 @@ mod test {
 
 ## Output
 
-![Unit](https://raw.githubusercontent.com/taishingi/unit-testing/master/unit.gif)
+![Unit](https://raw.githubusercontent.com/otechdo/unit-testing/master/src/unit/unit.gif)
