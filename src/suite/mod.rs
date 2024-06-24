@@ -40,7 +40,7 @@ impl Suite {
     ///
     /// if test fail
     ///
-    ///
+    #[must_use]
     pub fn run(self, x: bool, s: &str, e: &str) -> Self {
         (self.before_each)();
         assert!(x, "{}", e);
@@ -56,6 +56,8 @@ impl Suite {
     ///
     /// # End of the test suite
     ///
+    /// # Errors
+    ///
     pub fn end(&mut self) -> io::Result<()> {
         Ok(())
     }
@@ -64,18 +66,18 @@ impl Suite {
     ///
     /// - `actual`      The actual value
     /// - `expected`    The expected value
-    ///
-    pub fn eq<X: PartialEq>(self, actual: X, expected: X) -> Self {
-        self.run(actual.eq(&expected), IS_EQUALS, IS_UNEQUALS)
+    #[must_use]
+    pub fn eq<X: PartialEq>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.eq(expected), IS_EQUALS, IS_UNEQUALS)
     }
     ///
     /// # Check inequality
     ///
     /// - `actual`      The actual value
     /// - `expected`    The expected value
-    ///
-    pub fn ne<X: PartialEq>(self, actual: X, expected: X) -> Self {
-        self.run(actual.ne(&expected), IS_UNEQUALS, IS_EQUALS)
+    #[must_use]
+    pub fn ne<X: PartialEq>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.ne(expected), IS_UNEQUALS, IS_EQUALS)
     }
     ///
     /// # Check if actual is greater than expected
@@ -83,8 +85,9 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn gt<X: PartialOrd>(self, actual: X, expected: X) -> Self {
-        self.run(actual.gt(&expected), IS_SUPERIOR, IS_INFERIOR)
+    #[must_use]
+    pub fn gt<X: PartialOrd>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.gt(expected), IS_SUPERIOR, IS_INFERIOR)
     }
     ///
     /// # Check if actual is greater or equal than expected
@@ -92,8 +95,9 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn ge<X: PartialOrd>(self, actual: X, expected: X) -> Self {
-        self.run(actual.ge(&expected), IS_SUPERIOR, IS_INFERIOR)
+    #[must_use]
+    pub fn ge<X: PartialOrd>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.ge(expected), IS_SUPERIOR, IS_INFERIOR)
     }
 
     ///
@@ -102,7 +106,8 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn str_contains(self, actual: String, expected: &str) -> Self {
+    #[must_use]
+    pub fn str_contains(self, actual: &str, expected: &str) -> Self {
         self.run(actual.contains(expected), IS_CONTAINS, IS_NOT_CONTAINS)
     }
 
@@ -112,6 +117,7 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
+    #[must_use]
     pub fn path_exists(self, actual: &str, expected: bool) -> Self {
         self.run(Path::new(actual).exists().eq(&expected), IS_OK, IS_KO)
     }
@@ -121,6 +127,7 @@ impl Suite {
     ///
     /// - `actual` The actual path
     ///
+    #[must_use]
     pub fn exists(self, actual: &str) -> Self {
         self.run(Path::new(actual).exists(), IS_EXISTS, IS_NOT_EXISTS)
     }
@@ -131,8 +138,13 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn str_not_contains(self, actual: String, expected: &str) -> Self {
-        self.run(!actual.contains(expected), IS_NOT_CONTAINS, IS_CONTAINS)
+    #[must_use]
+    pub fn str_not_contains(self, actual: &str, expected: &str) -> Self {
+        self.run(
+            actual.contains(expected).eq(&false),
+            IS_NOT_CONTAINS,
+            IS_CONTAINS,
+        )
     }
 
     ///
@@ -141,8 +153,9 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn le<X: PartialOrd>(self, actual: X, expected: X) -> Self {
-        self.run(actual.le(&expected), IS_INFERIOR, IS_SUPERIOR)
+    #[must_use]
+    pub fn le<X: PartialOrd>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.le(expected), IS_INFERIOR, IS_SUPERIOR)
     }
     ///
     /// # Check if actual is lower than expected
@@ -150,8 +163,9 @@ impl Suite {
     /// - `actual` The actual value
     /// - `expected` The expected value
     ///
-    pub fn lt<X: PartialOrd>(self, actual: X, expected: X) -> Self {
-        self.run(actual.lt(&expected), IS_INFERIOR, IS_SUPERIOR)
+    #[must_use]
+    pub fn lt<X: PartialOrd>(self, actual: &X, expected: &X) -> Self {
+        self.run(actual.lt(expected), IS_INFERIOR, IS_SUPERIOR)
     }
 
     ///
@@ -160,7 +174,8 @@ impl Suite {
     /// - `description` The actual value
     /// - `expected` The expected value
     ///
-    pub fn group(self, description: &str, callback: fn(Suite) -> Suite) -> Self {
+    #[must_use]
+    pub fn group(self, description: &str, callback: fn(Self) -> Self) -> Self {
         println!("\n{}\n", description.white().bold());
         callback(self)
     }
@@ -205,33 +220,32 @@ mod test {
             "Suite test accept no test failure, for guaranty the source code.",
             || {},
             || {},
-            ||
-            {},
+            || {},
             || {},
             |s| {
                 s.group("Should be contains", |s| {
                     s.str_contains(
-                        fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                        &fs::read_to_string("README.md").expect("Failed to parse README.md"),
                         "cargo add unit-testing",
                     )
                 })
-                    .group("Check path", |s| {
-                        s.path_exists("README.md", true)
-                            .path_exists(".", true)
-                            .path_exists("alexandrie", false)
-                            .exists(".")
-                            .exists("README.md")
-                    })
-                    .group("Should be not contains", |s| {
-                        s.str_not_contains(
-                            fs::read_to_string("README.md").expect("Failed to parse README.md"),
-                            "cargo add continuous-testing",
-                        )
-                    })
-                    .group("Should be equals", |s| s.eq(1, 1).eq(2, 2))
-                    .group("Should be unequal", |s| s.ne(1, 2).ne(3, 2))
+                .group("Check path", |s| {
+                    s.path_exists("README.md", true)
+                        .path_exists(".", true)
+                        .path_exists("alexandrie", false)
+                        .exists(".")
+                        .exists("README.md")
+                })
+                .group("Should be not contains", |s| {
+                    s.str_not_contains(
+                        &fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                        "cargo add continuous-testing",
+                    )
+                })
+                .group("Should be equals", |s| s.eq(&1, &1).eq(&2, &2))
+                .group("Should be unequal", |s| s.ne(&1, &2).ne(&3, &2))
             },
         )
-            .end()
+        .end()
     }
 }

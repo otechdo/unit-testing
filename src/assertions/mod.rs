@@ -1,3 +1,10 @@
+use colored_truecolor::Colorize;
+use is_executable::IsExecutable;
+use progress_bar::{
+    finalize_progress_bar, inc_progress_bar, init_progress_bar, print_progress_bar_final_info,
+    print_progress_bar_info, set_progress_bar_action, Color, Style,
+};
+use regex::Regex;
 use std::cell::Cell;
 use std::collections::{HashMap, HashSet};
 use std::path::Path;
@@ -5,10 +12,6 @@ use std::process::ExitStatus;
 use std::thread::sleep;
 use std::time::{Duration, Instant};
 use std::{fs, io};
-use colored_truecolor::Colorize;
-use is_executable::IsExecutable;
-use progress_bar::{finalize_progress_bar, inc_progress_bar, print_progress_bar_final_info, print_progress_bar_info, set_progress_bar_action, Color, Style, init_progress_bar};
-use regex::Regex;
 
 use crate::objects::{Failure, Success, Take, Testable, Theory};
 use crate::output::{
@@ -303,7 +306,7 @@ impl Testable for Assert {
                     take.next().unwrap().to_string().cyan().bold(),
                     "ns".blue().bold()
                 )
-                    .as_str(),
+                .as_str(),
                 Color::Green,
                 Style::Bold,
             );
@@ -317,7 +320,7 @@ impl Testable for Assert {
                 total.to_string().blue().bold(),
                 "assertions".blue().bold()
             )
-                .as_str(),
+            .as_str(),
             Color::Green,
             Style::Bold,
         );
