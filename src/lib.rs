@@ -94,7 +94,7 @@ macro_rules! run {
 #[macro_export]
 macro_rules! it {
     ($title:expr,$description:expr,$before_all:ident,$before:ident,$after_all:ident,$after:ident,$main:ident) => {
-        $crate::suite::describe(
+        assert!($crate::suite::describe(
             $title,
             $description,
             $after_all,
@@ -103,5 +103,7 @@ macro_rules! it {
             $before,
             $main,
         )
+        .end()
+        .is_ok());
     };
 }

@@ -342,7 +342,7 @@ mod test {
         }
     }
     #[test]
-    fn suite() -> std::io::Result<()> {
+    fn suite() {
         it!(
             "Check the suite it test case",
             "Suite test accept no test failure, for guaranty the source code.",
@@ -351,7 +351,6 @@ mod test {
             before_all,
             after_all,
             main
-        )
-        .end()
+        );
     }
 }
