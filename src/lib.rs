@@ -34,28 +34,41 @@ macro_rules! check_that {
         Unit::it($title, $description, $time, $callbacks);
     };
 }
-
+///
+/// # Always panic but disable output message
+///
+/// - `c` callback
+///
 #[macro_export]
 macro_rules! always_panic {
     () => {
         std::panic::set_hook(Box::new(|_| {}));
-        panic!("This panic will have custom output");
+        panic!("");
     };
 }
-
+///
+///
+/// # Run test suite
+///
+/// - `t` The test result (bool)
+/// - `s` The test success message
+/// - `e` The error message
+/// - `before` The before each callback
+/// - `after` The after each callback
+///
 #[macro_export]
 macro_rules! run {
-    ($t:expr,$s:expr,$f:expr,$before:ident,$after:ident) => {
+    ($t:expr,$s:expr,$e:expr,$before:ident,$after:ident) => {
         $before();
         std::panic::set_hook(Box::new(|_| {
             println!(
                 "      {}",
-                format_args!("{} {}", "*".red().bold(), $f.yellow().bold())
+                format_args!("{} {}", "*".red().bold(), $e.yellow().bold())
             );
         }));
         if $t.eq(&false) {
             $after();
-            panic!("Test failed");
+            $crate::always_panic!();
         } else {
             println!(
                 "      {}",
@@ -65,8 +78,21 @@ macro_rules! run {
         std::thread::sleep(std::time::Duration::from_millis(50));
     };
 }
+
+///
+///
+/// # Run test suite
+///
+/// - `title` The test title
+/// - `description` The test description message
+/// - `before_all` The before all callback
+/// - `before` The before each callback
+/// - `after_all` The after all callback
+/// - `after` The after each callback
+/// - `main` The main callback
+///
 #[macro_export]
-macro_rules! describe {
+macro_rules! it {
     ($title:expr,$description:expr,$before_all:ident,$before:ident,$after_all:ident,$after:ident,$main:ident) => {
         $crate::suite::describe(
             $title,

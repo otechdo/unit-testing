@@ -262,8 +262,11 @@ pub fn describe(
     main: fn(Suite) -> Suite,
 ) -> Suite {
     before_all_hook();
-    println!("\n{}\n", title.white().bold());
-    println!("\n{}\n", description.white().bold());
+    println!(
+        "\n{}\n\n{}\n",
+        title.white().bold(),
+        description.white().bold()
+    );
     let data: Suite = main(Suite::new(before_each_hook, after_each_hook));
     after_all_hook();
     data
@@ -272,8 +275,9 @@ pub fn describe(
 #[cfg(test)]
 mod test {
     use crate::suite::Suite;
-    use crate::{always_panic, describe};
+    use crate::{always_panic, it};
     use std::fs;
+
     fn before_each() {}
     fn after_each() {}
     fn before_all() {}
@@ -339,7 +343,7 @@ mod test {
     }
     #[test]
     fn suite() -> std::io::Result<()> {
-        describe!(
+        it!(
             "Check the suite it test case",
             "Suite test accept no test failure, for guaranty the source code.",
             before_each,
