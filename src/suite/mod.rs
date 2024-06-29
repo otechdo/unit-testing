@@ -1,14 +1,14 @@
+use colored_truecolor::Colorize;
+use std::panic::UnwindSafe;
+use std::path::Path;
+use std::{io, panic};
+
 use crate::output::{
     ASSERT_LENGTH_EQUALS, ASSERT_LENGTH_UN0EQUALS, ASSERT_NOT_PANIC, ASSERT_PANIC, IS_CONTAINS,
     IS_EQUALS, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR,
     IS_UNEQUALS,
 };
-use colored_truecolor::Colorize;
-use std::panic::UnwindSafe;
-use std::path::Path;
-use std::thread::sleep;
-use std::time::Duration;
-use std::{io, panic};
+use crate::run;
 
 ///
 /// # Represent a test suite
@@ -43,15 +43,10 @@ impl Suite {
     /// if test fail
     ///
     #[must_use]
-    pub fn run(self, x: bool, s: &str, e: &str) -> Self {
-        (self.before_each)();
-        assert!(x, "{}", e);
-        println!(
-            "      {}",
-            format_args!("{} {}", "✓".green().bold(), s.cyan().bold())
-        );
-        (self.after_each)();
-        sleep(Duration::from_millis(50));
+    pub fn run(self, test: bool, success: &'static str, error: &'static str) -> Self {
+        let after = self.after_each;
+        let before = self.before_each;
+        run!(test, success, error, before, after);
         self
     }
 
@@ -87,8 +82,8 @@ impl Suite {
     ///
     #[must_use]
     pub fn panic(self, c: impl FnOnce() + UnwindSafe) -> Self {
-        let result = panic::catch_unwind(c);
-        self.run(result.is_err(), ASSERT_PANIC, ASSERT_NOT_PANIC)
+        let result = panic::catch_unwind(c).is_ok();
+        self.run(result.eq(&false), ASSERT_PANIC, ASSERT_NOT_PANIC)
     }
 
     ///
@@ -224,6 +219,17 @@ impl Suite {
     }
 
     ///
+    /// # Check if the callback exit code match the expected exit code
+    ///
+    /// - `actual` The callback to check
+    /// - `expected` The expected code
+    ///
+    #[must_use]
+    pub fn response<X: PartialEq>(self, c: &dyn Fn(X) -> X, x: X, expected: &X) -> Self {
+        self.run(c(x).eq(expected), IS_EQUALS, IS_UNEQUALS)
+    }
+
+    ///
     /// # Check if actual is lower than expected
     ///
     /// - `description` The actual value
@@ -265,13 +271,64 @@ pub fn describe(
 
 #[cfg(test)]
 mod test {
-    use crate::suite::describe;
+    use crate::suite::Suite;
+    use crate::{always_panic, describe};
     use std::fs;
+    fn before_each() {}
+    fn after_each() {}
+    fn before_all() {}
+    fn after_all() {}
 
+    fn main(s: Suite) -> Suite {
+        s.group("Should be contains", |s| {
+            s.str_contains(
+                &fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                "cargo add unit-testing",
+            )
+        })
+        .group("Check path", |s| {
+            s.path_exists("README.md", true)
+                .path_exists(".", true)
+                .path_exists("alexandrie", false)
+                .exists(".")
+                .exists("README.md")
+        })
+        .group("Should be not contains", |s| {
+            s.str_not_contains(
+                &fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                "cargo add continuous-testing",
+            )
+        })
+        .group("Should be equals", |s| {
+            s.eq(&1, &1)
+                .eq(&2, &2)
+                .response(&a, 10, &10)
+                .response(&b, 1, &01)
+        })
+        .group("Should be unequal", |s| s.ne(&1, &2).ne(&3, &2))
+        .group("Should be math len", |s| {
+            s.len(&vec!["", "", ""].iter(), &3)
+        })
+        .group("Should be match Ok", |s| s.ok(&data(2)).ok(&data(4)))
+        .group("Should be match Err", |s| s.ko(&data(5)).ko(&data(15)))
+        .group("Should panic", |s| s.panic(panic))
+        .group("Should not panic", |s| s.not_panic(not_panic))
+    }
     fn panic() {
-        panic!("a");
+        always_panic!();
     }
     fn not_panic() {}
+    fn a(x: i32) -> i32 {
+        b(x)
+    }
+    fn b(x: i32) -> i32 {
+        let data = if x <= 9 {
+            format!("0{x}").to_string().parse::<i32>()
+        } else {
+            x.to_string().parse::<i32>()
+        };
+        data.unwrap()
+    }
 
     fn data(x: usize) -> Result<(), String> {
         if x % 2 == 0 {
@@ -282,43 +339,14 @@ mod test {
     }
     #[test]
     fn suite() -> std::io::Result<()> {
-        describe(
+        describe!(
             "Check the suite it test case",
             "Suite test accept no test failure, for guaranty the source code.",
-            || {},
-            || {},
-            || {},
-            || {},
-            |s| {
-                s.group("Should be contains", |s| {
-                    s.str_contains(
-                        &fs::read_to_string("README.md").expect("Failed to parse README.md"),
-                        "cargo add unit-testing",
-                    )
-                })
-                .group("Check path", |s| {
-                    s.path_exists("README.md", true)
-                        .path_exists(".", true)
-                        .path_exists("alexandrie", false)
-                        .exists(".")
-                        .exists("README.md")
-                })
-                .group("Should be not contains", |s| {
-                    s.str_not_contains(
-                        &fs::read_to_string("README.md").expect("Failed to parse README.md"),
-                        "cargo add continuous-testing",
-                    )
-                })
-                .group("Should be equals", |s| s.eq(&1, &1).eq(&2, &2))
-                .group("Should be unequal", |s| s.ne(&1, &2).ne(&3, &2))
-                .group("Should be math len", |s| {
-                    s.len(&vec!["", "", ""].iter(), &3)
-                })
-                .group("Should be match Ok", |s| s.ok(&data(2)).ok(&data(4)))
-                .group("Should be match Err", |s| s.ko(&data(5)).ko(&data(15)))
-                .group("Should panic", |s| s.panic(panic))
-                .group("Should not panic", |s| s.not_panic(not_panic))
-            },
+            before_each,
+            after_each,
+            before_all,
+            after_all,
+            main
         )
         .end()
     }
