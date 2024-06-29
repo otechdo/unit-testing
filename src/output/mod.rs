@@ -6,6 +6,8 @@ pub const ASSERT_SUCCESS: &str = "The callback has a success exit status code";
 pub const ASSERT_SHOULD_BE_SUCCESS: &str = "The callback should have a success exit status code";
 pub const ASSERT_SHOULD_BE_FAIL: &str = "The callback should be have a failure exit status code";
 pub const ASSERT_FINNISH: &str = "The data finnish by the expected value";
+pub const ASSERT_LENGTH_EQUALS: &str = "The data len math the expected size";
+pub const ASSERT_LENGTH_UN0EQUALS: &str = "The data len don't math the expected size";
 pub const ASSERT_SHOULD_BE_BEGIN: &str =
     "The data don't begin with the expected value and should be begin with";
 pub const ASSERT_SHOULD_BE_FINNISH: &str =

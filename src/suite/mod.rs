@@ -1,6 +1,6 @@
 use crate::output::{
-    IS_CONTAINS, IS_EQUALS, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK,
-    IS_SUPERIOR, IS_UNEQUALS,
+    ASSERT_LENGTH_EQUALS, ASSERT_LENGTH_UN0EQUALS, IS_CONTAINS, IS_EQUALS, IS_EXISTS, IS_INFERIOR,
+    IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR, IS_UNEQUALS,
 };
 use colored_truecolor::Colorize;
 use std::io;
@@ -56,7 +56,7 @@ impl Suite {
     ///
     /// # End of the test suite
     ///
-    /// # Errors
+    /// # ErrorsShould be match Ok
     ///
     pub fn end(&mut self) -> io::Result<()> {
         Ok(())
@@ -71,10 +71,41 @@ impl Suite {
         self.run(actual.eq(expected), IS_EQUALS, IS_UNEQUALS)
     }
     ///
+    ///  - `a` The result to check if match Ok
+    ///
+    #[must_use]
+    pub fn ok<X, Y>(self, a: &Result<X, Y>) -> Self {
+        self.run(a.is_ok(), IS_OK, IS_KO)
+    }
+
+    ///
+    /// - `a` The data to check if X match Err
+    ///
+    #[must_use]
+    pub fn ko<X, Y>(self, a: &Result<X, Y>) -> Self {
+        self.run(a.is_err(), IS_KO, IS_OK)
+    }
+    ///
+    /// # Check the len
+    ///
+    /// - `actual` The actual len
+    /// - `expected`The expected len
+    ///
+    #[must_use]
+    pub fn len<X: ExactSizeIterator>(self, actual: &X, expected: &usize) -> Self {
+        self.run(
+            actual.len().eq(expected),
+            ASSERT_LENGTH_EQUALS,
+            ASSERT_LENGTH_UN0EQUALS,
+        )
+    }
+
+    ///
     /// # Check inequality
     ///
     /// - `actual`      The actual value
     /// - `expected`    The expected value
+    ///
     #[must_use]
     pub fn ne<X: PartialEq>(self, actual: &X, expected: &X) -> Self {
         self.run(actual.ne(expected), IS_UNEQUALS, IS_EQUALS)
@@ -213,6 +244,13 @@ mod test {
     use crate::suite::describe;
     use std::fs;
 
+    fn data(x: usize) -> Result<(), String> {
+        if x % 2 == 0 {
+            Ok(())
+        } else {
+            Err(String::from("not divisible by 2"))
+        }
+    }
     #[test]
     fn suite() -> std::io::Result<()> {
         describe(
@@ -229,23 +267,28 @@ mod test {
                         "cargo add unit-testing",
                     )
                 })
-                .group("Check path", |s| {
-                    s.path_exists("README.md", true)
-                        .path_exists(".", true)
-                        .path_exists("alexandrie", false)
-                        .exists(".")
-                        .exists("README.md")
-                })
-                .group("Should be not contains", |s| {
-                    s.str_not_contains(
-                        &fs::read_to_string("README.md").expect("Failed to parse README.md"),
-                        "cargo add continuous-testing",
-                    )
-                })
-                .group("Should be equals", |s| s.eq(&1, &1).eq(&2, &2))
-                .group("Should be unequal", |s| s.ne(&1, &2).ne(&3, &2))
+                    .group("Check path", |s| {
+                        s.path_exists("README.md", true)
+                            .path_exists(".", true)
+                            .path_exists("alexandrie", false)
+                            .exists(".")
+                            .exists("README.md")
+                    })
+                    .group("Should be not contains", |s| {
+                        s.str_not_contains(
+                            &fs::read_to_string("README.md").expect("Failed to parse README.md"),
+                            "cargo add continuous-testing",
+                        )
+                    })
+                    .group("Should be equals", |s| s.eq(&1, &1).eq(&2, &2))
+                    .group("Should be unequal", |s| s.ne(&1, &2).ne(&3, &2))
+                    .group("Should be math len", |s| {
+                        s.len(&vec!["", "", ""].iter(), &3)
+                    })
+                    .group("Should be match Ok", |s| s.ok(&data(2)).ok(&data(4)))
+                    .group("Should be match Err", |s| s.ko(&data(5)).ko(&data(15)))
             },
         )
-        .end()
+            .end()
     }
 }
