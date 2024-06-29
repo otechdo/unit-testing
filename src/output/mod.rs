@@ -10,6 +10,8 @@ pub const ASSERT_LENGTH_EQUALS: &str = "The data len math the expected size";
 pub const ASSERT_LENGTH_UN0EQUALS: &str = "The data len don't math the expected size";
 pub const ASSERT_SHOULD_BE_BEGIN: &str =
     "The data don't begin with the expected value and should be begin with";
+pub const ASSERT_PANIC: &str = "The callback panic";
+pub const ASSERT_NOT_PANIC: &str = "The callback don't panic";
 pub const ASSERT_SHOULD_BE_FINNISH: &str =
     "The data don't finnish with the value and she should be";
 pub const ASSERT_OK: &str = "The value match true";

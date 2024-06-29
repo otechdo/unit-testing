@@ -1,12 +1,14 @@
 use crate::output::{
-    ASSERT_LENGTH_EQUALS, ASSERT_LENGTH_UN0EQUALS, IS_CONTAINS, IS_EQUALS, IS_EXISTS, IS_INFERIOR,
-    IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR, IS_UNEQUALS,
+    ASSERT_LENGTH_EQUALS, ASSERT_LENGTH_UN0EQUALS, ASSERT_NOT_PANIC, ASSERT_PANIC, IS_CONTAINS,
+    IS_EQUALS, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR,
+    IS_UNEQUALS,
 };
 use colored_truecolor::Colorize;
-use std::io;
+use std::panic::UnwindSafe;
 use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
+use std::{io, panic};
 
 ///
 /// # Represent a test suite
@@ -76,6 +78,28 @@ impl Suite {
     #[must_use]
     pub fn ok<X, Y>(self, a: &Result<X, Y>) -> Self {
         self.run(a.is_ok(), IS_OK, IS_KO)
+    }
+
+    ///
+    /// # Check if a callback panic
+    ///
+    /// - `c` The callback to check
+    ///
+    #[must_use]
+    pub fn panic(self, c: impl FnOnce() + UnwindSafe) -> Self {
+        let result = panic::catch_unwind(c);
+        self.run(result.is_err(), ASSERT_PANIC, ASSERT_NOT_PANIC)
+    }
+
+    ///
+    /// # Check if a callback don't panic
+    ///
+    /// - `c` The callback to check
+    ///
+    #[must_use]
+    pub fn not_panic(self, c: impl FnOnce() + UnwindSafe) -> Self {
+        let result = panic::catch_unwind(c);
+        self.run(result.is_ok(), ASSERT_NOT_PANIC, ASSERT_PANIC)
     }
 
     ///
@@ -244,6 +268,11 @@ mod test {
     use crate::suite::describe;
     use std::fs;
 
+    fn panic() {
+        panic!("a");
+    }
+    fn not_panic() {}
+
     fn data(x: usize) -> Result<(), String> {
         if x % 2 == 0 {
             Ok(())
@@ -287,6 +316,8 @@ mod test {
                 })
                 .group("Should be match Ok", |s| s.ok(&data(2)).ok(&data(4)))
                 .group("Should be match Err", |s| s.ko(&data(5)).ko(&data(15)))
+                .group("Should panic", |s| s.panic(panic))
+                .group("Should not panic", |s| s.not_panic(not_panic))
             },
         )
         .end()
