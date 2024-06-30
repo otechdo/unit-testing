@@ -62,19 +62,22 @@ macro_rules! run {
         $before();
         std::panic::set_hook(Box::new(|_| {
             println!(
-                "      {}",
-                format_args!("{} {}", "*".red().bold(), $e.yellow().bold())
+                "{}\n",
+                format_args!("\t\t{} {}", "*".red().bold(), $e.red().blink().bold())
             );
         }));
         if $t.eq(&false) {
-            $after();
-            $crate::always_panic!();
-        } else {
-            println!(
-                "      {}",
-                format_args!("{} {}", "✓".green().bold(), $s.cyan().bold())
-            );
+            panic!("");
         }
+        println!(
+            "{}\n",
+            format_args!(
+                "\t\t{} {}",
+                "".true_color(55, 190, 176).bold(),
+                $s.true_color(55, 190, 176).bold()
+            )
+        );
+        $after();
         std::thread::sleep(std::time::Duration::from_millis(50));
     };
 }
