@@ -59,7 +59,9 @@ macro_rules! always_panic {
 #[macro_export]
 macro_rules! run {
     ($t:expr,$s:expr,$e:expr,$before:ident,$after:ident) => {
-        $before();
+        if let Some(a) = $before {
+            a();
+        }
         std::panic::set_hook(Box::new(|_| {
             println!(
                 "{}\n",
@@ -77,7 +79,9 @@ macro_rules! run {
                 $s.true_color(55, 190, 176).bold()
             )
         );
-        $after();
+        if let Some(b) = $after {
+            b();
+        }
         std::thread::sleep(std::time::Duration::from_millis(50));
     };
 }

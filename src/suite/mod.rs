@@ -10,14 +10,13 @@ use crate::output::{
     IS_UNEQUALS, THEORY_IS_FALSE, THEORY_IS_TRUE,
 };
 use crate::run;
-
 ///
 /// # Represent a test suite
 ///
 #[derive(Clone, Copy)]
 pub struct Suite {
-    before_each: fn(),
-    after_each: fn(),
+    before_each: Option<fn()>,
+    after_each: Option<fn()>,
 }
 
 impl Suite {
@@ -27,7 +26,8 @@ impl Suite {
     /// - `before_each` The callback to execute before each test
     /// - `after_each` The callback to execute after each test
     ///
-    pub fn new(before_each: fn(), after_each: fn()) -> Self {
+    #[must_use]
+    pub fn new(before_each: Option<fn()>, after_each: Option<fn()>) -> Self {
         Self {
             before_each,
             after_each,
@@ -358,20 +358,24 @@ impl Suite {
 pub fn describe(
     title: &str,
     description: &str,
-    after_all_hook: fn(),
-    after_each_hook: fn(),
-    before_all_hook: fn(),
-    before_each_hook: fn(),
+    after_all_hook: Option<fn()>,
+    after_each_hook: Option<fn()>,
+    before_all_hook: Option<fn()>,
+    before_each_hook: Option<fn()>,
     main: fn(Suite) -> Suite,
 ) -> Suite {
-    before_all_hook();
+    if let Some(a) = before_all_hook {
+        a();
+    }
     println!(
         "\n{}\n\n{}\n",
         title.true_color(164, 229, 224).bold(),
         description.true_color(164, 229, 224).bold(),
     );
     let data: Suite = main(Suite::new(before_each_hook, after_each_hook));
-    after_all_hook();
+    if let Some(b) = after_all_hook {
+        b();
+    }
     data
 }
 
@@ -381,11 +385,6 @@ mod test {
     use crate::{always_panic, it};
     use std::fs;
     use std::ops::Mul;
-
-    fn before_each() {}
-    fn after_each() {}
-    fn before_all() {}
-    fn after_all() {}
 
     fn sure(suite: Suite) -> Suite {
         suite.eq(&4, &4).ne(&3, &4)
@@ -535,10 +534,10 @@ mod test {
         it!(
             "Check the suite it test case",
             "Suite test accept no test failure, for guaranty the source code.",
-            before_each,
-            after_each,
-            before_all,
-            after_all,
+            None,
+            None,
+            None,
+            None,
             main
         );
     }
