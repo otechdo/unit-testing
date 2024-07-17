@@ -2,8 +2,6 @@ use std::panic::UnwindSafe;
 use std::path::Path;
 use std::{io, panic};
 
-use colored_truecolor::Colorize;
-
 use crate::output::{
     ASSERT_LENGTH_EQUALS, ASSERT_LENGTH_UN0EQUALS, ASSERT_NOT_PANIC, ASSERT_PANIC, IS_CONTAINS,
     IS_EQUALS, IS_EXISTS, IS_INFERIOR, IS_KO, IS_NOT_CONTAINS, IS_NOT_EXISTS, IS_OK, IS_SUPERIOR,
@@ -45,7 +43,7 @@ impl Suite {
     /// if test fail
     ///
     #[must_use]
-    pub fn run(self, test: bool, success: &'static str, error: &'static str) -> Self {
+    pub fn run(self, test: bool, success: &str, error: &str) -> Self {
         let after = self.after_each;
         let before = self.before_each;
         run!(test, success, error, before, after);
@@ -296,20 +294,12 @@ impl Suite {
             .run(c().ne(expected), THEORY_IS_TRUE, THEORY_IS_FALSE)
     }
     fn title(self, title: &str, description: &str) -> Self {
-        println!(
-            "\n{}\n\n\t{}\n",
-            title.to_lowercase().true_color(55, 190, 176).bold(),
-            description.true_color(164, 229, 224).bold(),
-        );
+        println!("\n{title}\n\n\t{description}\n");
         self
     }
 
     fn sub_title(self, title: &str, description: &str) -> Self {
-        println!(
-            "\t{}\n\n\t{}\n",
-            title.to_lowercase().true_color(212, 241, 244).bold(),
-            description.to_lowercase().true_color(212, 241, 244).bold(),
-        );
+        println!("\t{title}\n\n\t{description}\n");
         self
     }
 
@@ -367,11 +357,7 @@ pub fn describe(
     if let Some(a) = before_all_hook {
         a();
     }
-    println!(
-        "\n{}\n\n{}\n",
-        title.true_color(164, 229, 224).bold(),
-        description.true_color(164, 229, 224).bold(),
-    );
+    println!("\n{title}\n\n{description}\n");
     let data: Suite = main(Suite::new(before_each_hook, after_each_hook));
     if let Some(b) = after_all_hook {
         b();

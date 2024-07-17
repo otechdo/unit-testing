@@ -62,23 +62,11 @@ macro_rules! run {
         if let Some(a) = $before {
             a();
         }
-        std::panic::set_hook(Box::new(|_| {
-            println!(
-                "{}\n",
-                format_args!("\t\t{} {}", "*".red().bold(), $e.red().blink().bold())
-            );
-        }));
         if $t.eq(&false) {
-            panic!("");
+            println!("{}\n", format!("\t\t* {}", $e).as_str());
+            panic!("{}", $e);
         }
-        println!(
-            "{}\n",
-            format_args!(
-                "\t\t{} {}",
-                "".true_color(55, 190, 176).bold(),
-                $s.true_color(55, 190, 176).bold()
-            )
-        );
+        println!("{}\n", format!("\t\t{} {}", "", $s).as_str());
         if let Some(b) = $after {
             b();
         }
