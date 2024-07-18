@@ -313,26 +313,6 @@ impl Suite {
     pub fn group(self, title: &str, description: &str, callback: fn(Self) -> Self) -> Self {
         callback(self.title(title, description))
     }
-
-    ///
-    /// # Check if actual is lower than expected
-    ///
-    /// - `description` The actual value
-    /// - `expected` The expected value
-    ///
-    #[must_use]
-    pub fn sure(
-        self,
-        title: &str,
-        description: &str,
-        callback: &dyn Fn(Self) -> Self,
-        x: usize,
-    ) -> Self {
-        for _i in 0..x {
-            let _ = callback(self.title(title, description));
-        }
-        self
-    }
 }
 
 ///
@@ -372,9 +352,6 @@ mod test {
     use std::fs;
     use std::ops::Mul;
 
-    fn sure(suite: Suite) -> Suite {
-        suite.eq(&4, &4).ne(&3, &4)
-    }
     fn main(s: Suite) -> Suite {
         s.group(
             "Should be contains",
@@ -482,12 +459,6 @@ mod test {
         .group("Should not panic", "The callback should never panic", |s| {
             s.not_panic(not_panic)
         })
-        .sure(
-            "Check the persistence",
-            "Check if data return always the same result",
-            &sure,
-            5,
-        )
     }
     fn panic() {
         always_panic!();
